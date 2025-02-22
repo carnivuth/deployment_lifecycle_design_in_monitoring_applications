@@ -1,0 +1,295 @@
+%%%%
+% Istruzioni per iniziare
+% 1. stabilire un titolo provvisorio
+% 2. inserire uno o più correlatori, se presenti, in caso di tirocinio inserire almeno il tutor aziendale
+% 3. preparare un indice provvisorio, a partire dalla struttura base che contiene:
+%   a. contesto della tesi o del tirocinio
+%   b. background teorico, evitare di riportare concetti già studiati durante i corsi universitari, per questi basta una brevissima menzione con eventuale bibliografia
+%   c. background tecnologico, se pertinente
+%   d. sviluppo
+%   e. descrizione dell'apparato sperimentale e degli esperimenti, se presenti
+%   f. in caso di esperimenti, creare un progetto github che contenga codice e dati (se possibile) e condividere con il docente. NB: in caso di tirocinio in azienda chiedere il permesso all'azienda, in caso diniego non condividere
+%   g. conclusioni e possibili sviluppi futuri
+% 4. in linea di massima la tesi (indicativamente non meno di 50 pagine) deve essere pronta in versione molto avanzata quattro settimane prima della discussione, comunicare al docente quando si richiedono consigli o discussioni, non inviare files via mail, la condivisione avviene tramite overleaf, i commenti saranno riportati direttamente lì
+% 5. chiedere appuntamenti se è necessaria una discussione a voce
+%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%
+% NON SUDDIVIDERE IL TESTO DELLA TESI IN PIU' FILE LATEX
+% COMPILARE LA TESI USANDO QUESTO UNICO FILE DI ESEMPIO PER I CONTENUTI TESTUALI
+% LE ISTRUZIONI PER REDIGERE LA BIBLIOGRAFIA SONO A FINE FILE
+% LE PARTI DI CODICE PIU' RILEVANTI SI INCLUDONO NELLA TESI GENERANDO IL LATEX DA COLAB O CON ALTRI PACKAGE SPECIFICI
+%%%%%%%%%%%%%
+
+\documentclass[12pt,a4paper,twoside,openright]{book}
+
+\usepackage{parskip} % instead of paragraph indentation on first line and no spacing
+                     % makes no indentation and spacing
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+
+\usepackage{style/isi_style_lt}
+
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{caption}
+\usepackage[usenames]{color}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage{marvosym}
+\usepackage{multicol}
+\usepackage{sectsty}
+\usepackage{tocloft}
+\usepackage{microtype}
+\usepackage[table]{xcolor}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage[toc]{appendix}
+
+\usepackage{dsfont}
+\usepackage{comment}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{adjustbox}
+\usepackage{tkz-tab}
+\usepackage{tkz-kiviat,numprint}
+\usepackage{pgfplotstable}
+\usepackage{pgfplots}
+\usepackage{subcaption}
+
+\usepackage{tablefootnote}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{forest}
+\usetikzlibrary{trees,positioning,shapes,shadows,arrows.meta}
+
+\definecolor{bar1}{HTML}{FFEF9F}
+\definecolor{bar2}{HTML}{FFCFD2}
+\definecolor{bar3}{HTML}{CFBAF0}
+\definecolor{bar4}{HTML}{90DBF4}
+\definecolor{line1}{HTML}{BC4749}
+\definecolor{line2}{HTML}{168AAD}
+\definecolor{line3}{HTML}{7B2CBF}
+
+\definecolor{radar1}{HTML}{E3B505}
+\definecolor{radar2}{HTML}{34B2E4}
+\definecolor{radar3}{HTML}{065381}
+\definecolor{radar4}{HTML}{59A96A}
+\definecolor{radar5}{HTML}{E34856}
+\definecolor{radar6}{HTML}{FE912A}
+
+\newcommand*{\paramsbox}[2]{{\small \colorbox{white!#1!red}{\color{black} #2}}}
+\newcommand*{\carbonbox}[2]{{\small \colorbox{white!#1!green}{\color{black} #2}}}
+
+
+\input{jupyter.tex}
+
+\hypersetup{%
+	pdfpagemode={UseOutlines},
+	bookmarksopen,
+	pdfstartview={FitH},
+	colorlinks,
+	linkcolor={black},
+	citecolor={black},
+	urlcolor={black}
+}
+
+\input{style/settings.tex}
+
+\universita{Alma Mater Studiorum -- Università di Bologna}
+
+\scuola{Scuola di Ingegneria}
+
+\corsodilaurea{Corso di Laurea Magistrale in Ingegneria Informatica}
+
+\titolo{Sistemi per la gestione scalabile del software lifecycle in applicativi di monitoraggio}
+
+\materia{laboratorio di amministrazione di sistemi}
+
+\laureando{Matteo Longhi}
+
+\relatore[\footnotesize Chiar.mo Prof. Ing.\normalsize]{Marco Prandini}
+%\correlatoreA[\footnotesize Prof.\normalsize]{}
+%\correlatoreB[\footnotesize Dott. Ing.\normalsize]{}
+
+\sessione{Seconda} % 'Prima', 'Seconda', 'Terza'
+
+\annoaccademico{2024 -- 2025}
+
+\parolechiave %devono essere 5 keywordsrolechiave,
+{Provisioning}
+{scalabilità}
+{monitoraggio}
+{automazione}
+{software lifecycle}
+
+
+\dedica{\emph{ai ragazzi del Network operation center dei laboratori Marconi e ai gorilla che mi hanno supportato in questo percorso}}
+
+\makeindex
+
+\begin{document}
+
+\frontmatter
+
+\maketitle
+
+\chapter*{Sommario}
+\markboth{Sommario}{Sommario}
+
+Lo sviluppo software per risultare efficace necessita di una adeguata strategia di manutenzione e monitoraggio delle istanze in produzione per prevenire situazioni di software erosion. Il mio elaborato di tesi punta a mostrare quanto e stato svolto presso i Laboratori Marconi per quanto riguarda il software lifecycle del sistema di monitoraggio aziendale: Sanet.
+
+Nel elaborato verranno affrontate problematiche quali:
+
+\begin{itemize}
+  \item Riorganizzazione dell'architettura di produzione del software
+  \item Progettazione delle procedure di update del software
+  \item Pianificazione e esecuzione delle operazioni di migrazione delle istanze di produzione
+\end{itemize}
+
+L'obbiettivo del progetto che ho condotto presso i Laboratori Marconi e' stato allineare le installazioni di Sanet, a una unica architettura di produzione che fosse in grado di coprire tutte le varie esigenze di business in termini di servizi erogati. l'architettura in questione deve essere replicabile in maniera programmatica.
+
+Le sopracitate problematiche verranno esplorate con un occhio dedicato alla scalabilità e malleabilità delle operazioni e al mantenimento dei processi produttivi aziendali, con l'obbiettivo di rendere il Network operation center capace di gestire le operazioni regolari di manutenzione del software
+
+Il progetto ha comportato un ampia fase di analisi e studio dei workflow aziendali tra cui:
+
+\begin{itemize}
+  \item Workflow operativi del network operation center, intercettazione e gestione degli allarmi generati da sanet e procedure di escalation
+  \item Workflow operativi sistemistici legati alla manutenzione di Sanet e utilizzo come pulizia dei log e aggiunta a monitoraggio degli apparati
+  \item Workflow di sviluppo di integrazioni e componenti di sanet sia da parte dei team sistemistici che dell'area di sviluppo
+\end{itemize}
+
+Successivamente sono stati presi in analisi lo stato delle produzioni di sanet, identificate le situazioni critiche, i casi limite e le particolarità delle singole istanze, questo per avere coscienza di cosa sia necessario nell'architettura di produzione finale e definire il minimo insieme che contenesse tutte le features richieste per erogare il servizio di monitoraggio.
+
+A seguito la progettazione e sviluppo della nuova architettura e del conseguente processo di migrazione delle istanze in produzione alla nuova architettura. Con la conseguente produzione della documentazione operativa e di sviluppo per la manutenzione e utilizzo del progetto.
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\listoffigures
+
+\mainmatter
+
+\pagestyle{fancy}
+\fancyhead[LO]{\nouppercase{\rightmark}}
+\fancyhead[RE]{\nouppercase{\leftmark}}
+\fancyhead[LE,RO]{\thepage}
+\fancyfoot{}
+
+\chapter{Introduzione, background teorico e tecnologico}
+
+La manutenzione e il monitoraggio di un software in produzione e fondamentale per prevenire fenomeni di software erosion, gestire il software lifecycle nelle grandi installazioni e' sempre molto costoso, specialmente se il core business non e lo sviluppo software ma il servizio erogato tramite esso.
+
+Il problema si presenta in maniera ancora maggiore quando la separazione dei contesti dovuta all'espansione del parco clienti porta a un crescere sempre maggiore del numero di istanze del software in produzione che erogano il servizio, gli effetti più comuni della software erosion sono:
+
+\begin{itemize}
+    \item dipendenze software non aggiornate che portano a incompatibilità applicative con standard dell'industria
+    \item degradazione delle performance dovuta a dischi 
+    \item sistemi insicuri, dovuti al degrado di protocolli di cifratura utilizzati per le comunicazioni
+\end{itemize}
+
+Queste problematiche possono diventare causa di forti rallentamenti al workflow aziendale, specialmente se ignorati per molto tempo, impedendo agli utenti amministratori l'utilizzo del software dato che questi si vedono costretti a impiegare le loro risorse in operazioni di manutenzione del software che spesso e volentieri non sono risolutive del problema.
+
+Un esempio può essere l'installazione manuale di dipendenze applicative, rese obsolete da aggiornamenti dell'ambiente di esecuzione ma necessarie all'applicazione per funzionare risultando in ambienti non solo instabili ma anche insicuri.
+
+La software erosion incide anche sullo sviluppo del software in produzione, dato che l'aggiornamento di istanze "dimenticate" può richiedere troppe risorse invogliando cosi all'implementazione di workaround pur di soddisfare esigenze di servizio. In queste situazioni l'istanza in produzione e soggetta a una "morsa a tenaglia" dove il ciclo di rilascio del software si deve scontrare con integrazioni applicative sviluppate dagli utenti sistemisti che sfruttano API "non convenzionali" per arricchire le funzionalità del sistema stesso.
+
+Il problema risulta accentuato se lo sviluppo non prevede la produzione e l'utilizzo di artefatti per la messa in produzione del software, in questo caso le infrastrutture in produzione sono alla merce di procedure di installazione manuali che portano a una frammentazione degli ambienti in produzione. La creazione di artefatti, specialmente per sistemi software complessi, non deve prevedere solo la messa in funzione delle componenti applicative sviluppate a doc ma anche di tutti i possibili servizi di cui l'applicazione necessita come:
+
+\begin{itemize}
+    \item servizi di data storage (databases,demoni cache)
+    \item servizi web
+    \item demoni per l'esecuzione di manutenzioni programmate
+\end{itemize}
+
+Per affrontare il problema sono nati i container, ambienti che sfruttano la funzionalità del kernel linux namespaces per isolare processi applicativi su differenti livelli. Questi sistemi offrono spesso approcci dichiarativi al problema consentendo allo sviluppatore la riproducibilità dell'ambiente di esecuzione e testing. Inoltre consentono di uniformare l'interfaccia fra sviluppo e operazioni di devops e rendere lo sviluppo consapevole dell'ambiente di produzione già in fase di progettazione.
+
+I container offrono la possibilità allo sviluppo di progettare il funzionamento di features applicative che necessitano di un determinato supporto runtime dall'ambiente di produzione, per esempio assicurarsi della raggiungibilità via rete dei componenti dell'applicazione, creare ambienti di test in agilità simulando interazioni fra vari nodi in rete, testare integrazioni con altri ambienti prima di aggiornare la produzione
+
+\chapter{Analisi dei requisiti}
+%Requisiti di progetto e obbiettivo finale richiesto dalla missione di business
+
+L'Attività svolta presso i laboratori Marconi aveva come obbiettivo finale rendere i membri del network operation center team (NOC in breve) capaci di svolgere le operazioni di manutenzione delle installazioni del software di monitoraggio aziendale Sanet, in particolare:
+
+\begin{itemize}
+\item svolgere in autonomia operazioni di aggiornamento distribuito di sanet
+\item programmare e organizzare attività di installazione di istanze di sanet
+\item svolgere monitoraggio delle performance e conseguenti attività di manutenzione come pulizia di log applicativi, bilanciamenti di carico, aggiunta di nodi a monitoraggio
+\end{itemize}
+
+Questo con l'obbiettivo di poter successivamente spostare la responsabilità della gestione delle istanze in produzione al team NOC, e evitare che i membri dei singoli team di sistemisti si debbano occupare di tale attività, liberando risorse da dedicare a task sistemistici richiesti dai clienti.
+
+E' stato inoltre richiesto che fossero revisionate le documentazioni tecniche riguardanti le attività di monitoraggio svolte presso i vari clienti, in modo da uniformare la base documentale e renderne più semplice l'accesso in maniera programmatica.
+
+I requisti richiesti hanno come scopo ultimo quello di ridurre la quantità di ore uomo complessive spese in operazioni di manutenzione di Sanet, ridurre l'entropia delle installazioni in produzione accentrandone la gestione a un unico team
+
+\subsection{Analisi del contesto aziendale}
+% Analisi della situazione logistica aziendale, workflow di gestione di sanet, capacita operativa del team noc in tale contesto
+
+Il business principale dei laboratori Marconi consiste nel monitoraggio di apparati e servizi applicativi, per erogare tale servizio e non dipendere da software esterno l'azienda ha deciso di sviluppare la sua soluzione di monitoraggio proprietaria: Sanet.
+
+Dal punto di vista architetturale Sanet e un sistema distribuito basato su Simple network message protocol (SNMP), composto da processi demoni di varia natura tra cui:
+
+\begin{itemize}
+    \item demoni per lo storage dei dati
+    \item demoni per il recupero dei dati stessi
+    \item demoni per la gestione delle notifiche
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{sanet_architecture.png}
+    \caption{architettura di sanet}
+    \label{fig:enter-label}
+\end{figure}
+Per ogni cliente dei Laboratori viene predisposta un istanza del sistema Sanet in una macchina dedicata, l'amministrazione e affidata ai sistemisti che hanno in carico la commessa dello specifico cliente
+
+SCHEMA TEAM CLIENTI
+
+le richieste di messa a monitoraggio dei clienti vengono svolte dai membri del team o dai membri del Network Operation Center (NOC) a seconda della complessità dell'operazione. I clienti possono inoltre richiedere integrazioni ad hoc con software esterni, queste richieste vengono prese in carico dai team di riferimento.
+
+Con il tempo questa gestione ha portato a una frammentazione nelle scelte amministrative delle istanze di sanet e a gravi situazioni di software erosion. Ad ogni richiesta di monitoraggio dei clienti le installazioni di sanet vengono integrate con software esterni per mezzo di componenti sviluppati dai sistemisti.
+
+Queste componenti software non vengono sottoposte a versioning o documentazione estensiva e lo sviluppo non e in grado di tenerne traccia, inoltre non e previsto un controllo delle dipendenze ne una procedura di deployment.
+
+Non e in frequente, inoltre che queste integrazioni condividano dipendenze in comune con Sanet, queste possono mostrarsi sotto la forma di librerie ma anche di istanze di servizi software come redis o postgres 
+
+Le integrazioni si interfacciano con Sanet per mezzo di API non standard che possono spaziare da formato di file generati dal sistema a output da command line interface.
+
+Questo approccio porta a un problema legato alle gestione delle manutenzioni del software, aggiornamento delle dipendenze e gestione delle manutenzioni ordinarie e straordinarie, per esempio l'aggiornamento dei sorgenti di sanet non può essere apportato in maniera identica su diverse installazioni senza rischiare di rompere integrazioni.
+
+Operazioni ordinarie come l'aggiunta a monitoraggio la modifica di configurazioni di sistema e la gestione di richieste del cliente non può essere svolta in maniera omogenea trasversalmente nelle diverse installazioni
+
+\chapter{Analisi del problema di business}
+Ampia descrizione delle problematiche operative (workflow aziendali non più manutenibili) e di sviluppo (mantenimento dell'applicativo, automazione delle operazioni di ciclo di vita del software) overview di ciò che già e stato fatto e come viene gestito il software in produzione
+
+\chapter{Progettazione della soluzione}
+Progettazione della architettura di produzione del software applicativo, gestione di tutti i componenti critici per la corretta erogazione dei servizi offerti e progettazione del sistema di software management per la gestione del lifecycle, progettazione di tutte le operazioni necessarie per la migrazione alla nuova architettura
+
+\chapter{Implementazione}
+Implementazioni delle soluzioni progettate, descrizione delle problematiche incontrate in fase di migrazione e correzioni adottate per sopperire ai problemi
+
+\chapter{sviluppi futuri}
+Possibili sviluppi futuri sia in ambito architetturale sia per quanto riguarda il sistema di mantenimento dell'installato
+
+\chapter{Conclusioni}
+Considerazioni sulle performance, obbiettivi conseguiti,
+
+\backmatter
+\addcontentsline{toc}{chapter}{Bibliografia}
+\bibliographystyle{unsrt}
+% i riferimenti bibliografici, che devono essere almeno 20 per una tesi triennale ed almeno 30 per una della magistrale, si scaricano da qui https://dblp.uni-trier.de/search/
+% e si aggiungono al file bibliografia.bib, dopodichè si citano opportuanamente nel testo della tesi con \cite{label}  dove label è il primo elemento di ogni rif. bibliografico subito dopo la parentesi graffa aperta, e.g. DBLP:books/daglib/0087929 (vedi file .bib sopra menzionato)
+%\bibliography{bibliografia}
+
+\end{document}
