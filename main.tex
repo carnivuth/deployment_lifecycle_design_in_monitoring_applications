@@ -27,7 +27,7 @@
                      % makes no indentation and spacing
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
-\usepackage[italian]{babel}
+%\usepackage[italian]{babel}
 \usepackage[T1]{fontenc}
 
 \usepackage{style/isi_style_lt}
@@ -194,7 +194,7 @@ Il problema si presenta in maniera ancora maggiore quando la separazione dei con
 
 \begin{itemize}
     \item dipendenze software non aggiornate che portano a incompatibilità applicative con standard dell'industria
-    \item degradazione delle performance dovuta a dischi 
+    \item degradazione delle performance dovuta a dischi
     \item sistemi insicuri, dovuti al degrado di protocolli di cifratura utilizzati per le comunicazioni
 \end{itemize}
 
@@ -248,7 +248,7 @@ Dal punto di vista architetturale Sanet e un sistema distribuito basato su Simpl
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\linewidth]{sanet_architecture.png}
+    \includegraphics[width=1\linewidth]{images/sanet_architecture.png}
     \caption{architettura di sanet}
     \label{fig:enter-label}
 \end{figure}
@@ -262,7 +262,7 @@ Con il tempo questa gestione ha portato a una frammentazione nelle scelte ammini
 
 Queste componenti software non vengono sottoposte a versioning o documentazione estensiva e lo sviluppo non e in grado di tenerne traccia, inoltre non e previsto un controllo delle dipendenze ne una procedura di deployment.
 
-Non e in frequente, inoltre che queste integrazioni condividano dipendenze in comune con Sanet, queste possono mostrarsi sotto la forma di librerie ma anche di istanze di servizi software come redis o postgres 
+Non e in frequente, inoltre che queste integrazioni condividano dipendenze in comune con Sanet, queste possono mostrarsi sotto la forma di librerie ma anche di istanze di servizi software come redis o postgres
 
 Le integrazioni si interfacciano con Sanet per mezzo di API non standard che possono spaziare da formato di file generati dal sistema a output da command line interface.
 
