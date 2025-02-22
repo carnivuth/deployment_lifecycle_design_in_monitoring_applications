@@ -13,7 +13,7 @@ git clone https://github.com/carnivuth/[CHANGEME]
 - installare le dipendenze di build
 
 ```bash
-pacman -S texlive-latex texlive-latexrecommended texlive-latexextra make mermaid-cli
+pacman -S texlive-latex texlive-latexrecommended texlive-latexextra make mermaid-cli inotify-tools
 ```
 
 - buildare il progetto
