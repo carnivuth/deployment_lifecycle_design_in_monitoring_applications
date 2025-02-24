@@ -1,0 +1,10 @@
+flowchart LR
+A[sanetd]
+B[(redis)]
+C[poller1]
+D[poller2]
+
+A -- stores application data task results --> B
+A -- push tasks --> B
+D -- read tasks --> B
+C -- read tasks --> B

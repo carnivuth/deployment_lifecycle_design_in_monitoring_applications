@@ -5,9 +5,14 @@ C[pingerd]
 D[(redis)]
 E[(postgres)]
 F[apache2]
+G[rrdcached]
+H((entables))
+Z[nocview]
 
-A --> E
-A --> D
+A --stores data --> E
+A -- cache and task queue --> D
 B --> D
 F --> E
-B --> C
+B -- send icmp packets--> C
+A --stores timelines --> G
+A --trigger alarms --> H -- send alarms --> Z

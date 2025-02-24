@@ -234,7 +234,7 @@ E' stato inoltre richiesto che fossero revisionate le documentazioni tecniche ri
 
 I requisti richiesti hanno come scopo ultimo quello di ridurre la quantità di ore uomo complessive spese in operazioni di manutenzione di Sanet, ridurre l'entropia delle installazioni in produzione accentrandone la gestione a un unico team
 
-\subsection{Analisi del contesto aziendale}
+\subsection{Analisi dell'applicativo}
 % Analisi della situazione logistica aziendale, workflow di gestione di sanet, capacita operativa del team noc in tale contesto
 
 Il business principale dei laboratori Marconi consiste nel monitoraggio di apparati e servizi applicativi, per erogare tale servizio e non dipendere da software esterno l'azienda ha deciso di sviluppare la sua soluzione di monitoraggio proprietaria: Sanet.
@@ -247,15 +247,77 @@ Dal punto di vista architetturale Sanet e un sistema distribuito basato su Simpl
     \item demoni per la gestione delle notifiche
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{images/sanet_architecture.png}
     \caption{architettura di sanet}
     \label{fig:enter-label}
 \end{figure}
+
+% architettura applicativa
+L'architettura si compone di un demone principale sanetd che svolge i seguenti compiti:
+
+\begin{itemize}
+  \item gestione del flusso dati in ingresso e della ripartizione e scheduling dei task da eseguire per effettuare il monitoraggio
+  \item salvataggio di log applicativi e stato dei controlli su storage stabile
+  \item gestione delle timelines generate dai task di monitoraggio
+  \item gestione del flusso in ingresso per il demone di gestione delle notifiche
+\end{itemize}
+
+% datagroups
+I task generati dal demone principale vengono denominati datagroups, un datagroup e la composizione di tre elementi principali:
+
+\begin{itemize}
+  \item datasource sorgente dei dati, specifica le modalita con cui i dati devono essere reperiti, per esempio possono essere specificate OID SNMP, files, risorse web
+  \item condition controllo da effettuare sui datasource interessati, le condition sono la sorgente degli allarmi generati
+  \item timegraph contengono informazioni sullo storico del determinato datasource, per esempio le statistiche di banda consumata per una data interfaccia di rete
+\end{itemize}
+
+% conditions
+Le condition di un datagroup possono assumere 4 stati diversi:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.5\linewidth]{images/condition_status.png}
+    \caption{stati di una condition}
+    \label{fig:enter-label}
+\end{figure}
+
+La transizione da uno stato all'altro avviene subito dopo l'esecuzione di una condition da parte di un poller, in particolare nel momento in cui l'espressione booleana della condition risulta falsa essa transiziona in stato failing, al raggiungimento di un numero di tentativi falliti configurabile il controllo passa in stato down.
+
+% tipologie di oggetti monitorabili TODO
+Sanet suddivide gli oggetti monitorabili in macro categorie
+% genearazione e instradamento di allarmi TODO
+
+% scheduling delle conditions
+Le condition vengono verificate dal sistema applicando uno schema a polling, il demone centrale inserisce nella coda le condition che devono essere verificate e i processi poller consumano le condition in coda e inseriscono i risultati che vengono raccolti dal processo centrale che aggiorna lo stato interno delle conditions.Le code vengono implementate per mezzo del key value store redis
+
+Durante l'esecuzione della condition il poller recupera i valori di tutti i datasource coinvolti nella condition stessa, esegue l'espressione booleana della condition, aggiorna i timegraph con i rispettivi valori e restituisce tutto al demone centrale per mezzo delle code di redis
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/sanetd_pollers_interaction.png}
+    \caption{interazione sanetd pollers}
+    \label{fig:enter-label}
+\end{figure}
+
+% linguaggio di configurazione TODO
+
+I task vengono descritti secondo un linguaggio di configurazione interno al'applicazione, che
+
+% linguaggio di espressione delle condition TODO
+
+\subsection{Analisi del contesto aziendale}
+
 Per ogni cliente dei Laboratori viene predisposta un istanza del sistema Sanet in una macchina dedicata, l'amministrazione e affidata ai sistemisti che hanno in carico la commessa dello specifico cliente
 
-SCHEMA TEAM CLIENTI
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{images/team_schema.png}
+    \caption{schema operativita team sistemistici}
+    \label{fig:enter-label}
+\end{figure}
 
 le richieste di messa a monitoraggio dei clienti vengono svolte dai membri del team o dai membri del Network Operation Center (NOC) a seconda della complessità dell'operazione. I clienti possono inoltre richiedere integrazioni ad hoc con software esterni, queste richieste vengono prese in carico dai team di riferimento.
 
