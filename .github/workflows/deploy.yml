@@ -1,9 +1,9 @@
 ---
-name: Publish blog changes on github pages
+name: Release thesis
 on:
   push:
     tags:
-      - 'relase*'
+      - 'v*'
 
 jobs:
   build:
