@@ -87,7 +87,7 @@
 
 \corsodilaurea{Corso di Laurea Magistrale in Ingegneria Informatica}
 
-\titolo{Sistemi per la gestione scalabile del software lifecycle in applicativi di monitoraggio}
+\titolo{Sistemi per la gestione scalabile del software life-cycle in applicativi di monitoraggio}
 
 \materia{laboratorio di amministrazione di sistemi}
 
@@ -106,7 +106,7 @@
 {scalabilità}
 {monitoraggio}
 {automazione}
-{software lifecycle}
+{software life-cycle}
 
 
 \dedica{\emph{ai ragazzi del Network operation center dei laboratori Marconi e ai gorilla che mi hanno supportato in questo percorso}}
@@ -122,7 +122,7 @@
 \chapter*{Sommario}
 \markboth{Sommario}{Sommario}
 
-Lo sviluppo software per risultare efficace necessita di una adeguata strategia di manutenzione e monitoraggio delle istanze in produzione per prevenire situazioni di software erosion. Il mio elaborato di tesi punta a mostrare quanto e stato svolto presso i Laboratori Marconi per quanto riguarda il software lifecycle del sistema di monitoraggio aziendale: Sanet.
+Lo sviluppo software per risultare efficace necessita di una adeguata strategia di manutenzione e monitoraggio delle istanze in produzione per prevenire situazioni di software erosion. Il mio elaborato di tesi punta a mostrare quanto e stato svolto presso i Laboratori Marconi per quanto riguarda il software life-cycle del sistema di monitoraggio aziendale: Sanet.
 
 Nel elaborato verranno affrontate problematiche quali:
 
@@ -132,7 +132,7 @@ Nel elaborato verranno affrontate problematiche quali:
   \item Pianificazione e esecuzione delle operazioni di migrazione delle istanze di produzione
 \end{itemize}
 
-L'obbiettivo del progetto che ho condotto presso i Laboratori Marconi e' stato allineare le installazioni di Sanet, a una unica architettura di produzione che fosse in grado di coprire tutte le varie esigenze di business in termini di servizi erogati. l'architettura in questione deve essere replicabile in maniera programmatica.
+L'obbiettivo del progetto che ho condotto presso i Laboratori Marconi e' stato allineare le installazioni di Sanet, a una unica architettura di produzione che fosse in grado di coprire tutte le varie esigenze di business in termini di servizi erogati. L'architettura in questione deve essere replicabile in maniera programmatica.
 
 Le sopracitate problematiche verranno esplorate con un occhio dedicato alla scalabilità e malleabilità delle operazioni e al mantenimento dei processi produttivi aziendali, con l'obbiettivo di rendere il Network operation center capace di gestire le operazioni regolari di manutenzione del software
 
@@ -166,7 +166,7 @@ A seguito la progettazione e sviluppo della nuova architettura e del conseguente
 
 \chapter{Introduzione, background teorico e tecnologico}
 
-La manutenzione e il monitoraggio di un software in produzione e fondamentale per prevenire fenomeni di software erosion, gestire il software lifecycle nelle grandi installazioni e' sempre molto costoso, specialmente se il core business non e lo sviluppo software ma il servizio erogato tramite esso.
+La manutenzione e il monitoraggio di un software in produzione e fondamentale per prevenire fenomeni di software erosion, gestire il software life-cycle nelle grandi installazioni e' sempre molto costoso, specialmente se il core business non e lo sviluppo software ma il servizio erogato tramite esso.
 
 Il problema si presenta in maniera ancora maggiore quando la separazione dei contesti dovuta all'espansione del parco clienti porta a un crescere sempre maggiore del numero di istanze del software in produzione che erogano il servizio, gli effetti più comuni della software erosion sono:
 
@@ -197,7 +197,7 @@ I container offrono la possibilità allo sviluppo di progettare il funzionamento
 \chapter{Analisi dei requisiti}
 %Requisiti di progetto e obbiettivo finale richiesto dalla missione di business
 
-L'Attività svolta presso i laboratori Marconi aveva come obbiettivo finale rendere i membri del network operation center team (NOC in breve) capaci di svolgere le operazioni di manutenzione delle installazioni del software di monitoraggio aziendale Sanet, in particolare:
+L'attività svolta presso i laboratori Marconi aveva come obbiettivo finale rendere i membri del network operation center team (NOC in breve) capaci di svolgere le operazioni di manutenzione delle installazioni del software di monitoraggio aziendale Sanet, in particolare:
 
 \begin{itemize}
 \item svolgere in autonomia operazioni di aggiornamento distribuito di sanet
@@ -211,8 +211,11 @@ E' stato inoltre richiesto che fossero revisionate le documentazioni tecniche ri
 
 I requisti richiesti hanno come scopo ultimo quello di ridurre la quantità di ore uomo complessive spese in operazioni di manutenzione di Sanet, ridurre l'entropia delle installazioni in produzione accentrandone la gestione a un unico team
 
+\chapter{Analisi del problema di business}
+%Ampia descrizione delle problematiche operative (workflow aziendali non più manutenibili) e di sviluppo (mantenimento dell'applicativo, automazione delle operazioni di ciclo di vita del software) overview di ciò che già e stato fatto e come viene gestito il software in produzione
+
 \subsection{Analisi dell'applicativo}
-% Analisi della situazione logistica aziendale, workflow di gestione di sanet, capacita operativa del team noc in tale contesto
+% Analisi della situazione logistica aziendale, workflow di gestione di sanet, capacita operativa del team NOC in tale contesto
 
 Il business principale dei laboratori Marconi consiste nel monitoraggio di apparati e servizi applicativi, per erogare tale servizio e non dipendere da software esterno l'azienda ha deciso di sviluppare la sua soluzione di monitoraggio proprietaria: Sanet.
 
@@ -245,7 +248,7 @@ L'architettura si compone di un demone principale sanetd che svolge i seguenti c
 I task generati dal demone principale vengono denominati \verb|datagroups|, un datagroup e la composizione di tre elementi principali:
 
 \begin{itemize}
-  \item \verb|datasource| sorgente dei dati, specifica le modalita con cui i dati devono essere reperiti, per esempio possono essere specificate OID SNMP, files, risorse web
+  \item \verb|datasource| sorgente dei dati, specifica le modalità con cui i dati devono essere reperiti, per esempio possono essere specificate OID SNMP, files, risorse web
   \item \verb|condition| controllo da effettuare sui datasource interessati, le condition sono la sorgente degli allarmi generati
   \item \verb|timegraph| contengono informazioni sullo storico del determinato datasource, per esempio le statistiche di banda consumata per una data interfaccia di rete
 \end{itemize}
@@ -260,9 +263,9 @@ Le condition di un datagroup possono assumere 4 stati diversi:
     \label{fig:enter-label}
 \end{figure}
 
-La transizione da uno stato all'altro avviene subito dopo l'esecuzione di una condition da parte di un poller, in particolare nel momento in cui l'espressione booleana della condition risulta falsa essa transiziona in stato \verb|failing|, al raggiungimento di un numero di tentativi falliti configurabile il controllo passa in stato \verb|down|, se il poller non riesce a valutare la condizione peresempio per irraggiungibilita del nodo o per fallimento di servizi necessari la condition transita in stato \verb|uncheckable|.
+La transizione da uno stato all'altro avviene subito dopo l'esecuzione di una condition da parte di un poller, in particolare nel momento in cui l'espressione booleana della condition risulta falsa essa effettua una transizione nello stato \verb|failing|, al raggiungimento di un numero di tentativi falliti configurabile il controllo passa in stato \verb|down|, se il poller non riesce a valutare la condizione per esempio per irraggiungibilità del nodo o per fallimento di servizi necessari la condition transita in stato \verb|uncheckable|.
 
-Il linguaggio di configurazione consente di specificare regole di dipendenza tra vari check per mezzo del parametro \verb|dependson|, una data condition che e in \verb|dependson| di un altra non viene verificata se le condition da cui dipende non si trovano in stato \verb|UP|, in caso questo non sia verificato la condition passa in stato \verb|uncheackable|
+Il linguaggio di configurazione consente di specificare regole di dipendenza tra vari check per mezzo del parametro \verb|dependson|, una data condition che e in \verb|dependson| di un altra non viene verificata se le condition da cui dipende non si trovano in stato \verb|UP|, in caso questo non sia verificato la condition passa in stato \verb|uncheckable|
 
 \begin{figure}[H]
     \centering
@@ -272,25 +275,25 @@ Il linguaggio di configurazione consente di specificare regole di dipendenza tra
 \end{figure}
 
 % tipologie di oggetti monitorabili TODO
-Sanet suddivide gli oggetti monitorabili in macro categorie note nel contesto del monitorraggio di apparati di rete, viene definita la seguente classificazione:
+Sanet suddivide gli oggetti monitorabili in macro categorie note nel contesto del monitoraggio di apparati di rete, viene definita la seguente classificazione:
 
 \begin{itemize}
   \item storage: supporti di memoria di vario genere sia fisici che virtuali
-  \item service: servizi di qualunque entita, generalmente processi demoni
+  \item service: servizi di qualunque entità, generalmente processi demoni
   \item interface: Interfacce di rete del nodo monitorato
 \end{itemize}
 
 Per questi oggetti vengono previsti datasource e condition di default come lo stato dello storage o il traffico sulle interfacce.
 
-% genearazione e instradamento di allarmi TODO
-Nel momento in cui una condition transita nello stato down viene generato un allarme, questo viene processato dal demone entables che determina la corretta destinazione dell'allarme in base a tabelle e catene di regole, in particolare sono previste 2 tabelle principali
+% generazione e instradamento di allarmi TODO
+Nel momento in cui una condition transita nello stato \verb|down| viene generato un allarme, questo viene processato dal demone \verb|entables| che determina la corretta destinazione dell'allarme in base a tabelle e catene di regole, in particolare sono previste 2 tabelle principali
 
 \begin{itemize}
   \item tabella di mangle: utilizzata per arricchire l'allarme di metadati per il processing da parte di sistemi esterni
   \item tabella di filter: questa tabella e quella dove il pacchetto viene instradato al corretto destinatario
 \end{itemize}
 
-Le tabelle sono composte da catene di regole, nel momento in cui un allarme viene processato da entables questo scorre tutte le catene definite e se una data regola nella catena fa match con gli attributi dell'allarme vengono applicate le azioni di quella determinata regola e si procede alla regola successiva
+Le tabelle sono composte da catene di regole, nel momento in cui un allarme viene processato da \verb|entables| questo scorre tutte le catene definite e se una data regola nella catena fa match con gli attributi dell'allarme vengono applicate le azioni di quella determinata regola e si procede alla regola successiva
 
 \begin{figure}[H]
     \centering
@@ -299,10 +302,10 @@ Le tabelle sono composte da catene di regole, nel momento in cui un allarme vien
     \label{fig:enter-label}
 \end{figure}
 
-Gli un allarme puo essere consegnato a destinazioni differenti, le piu utilizzate sono la notifica attraverso \verb|SMTP| (email) oppure la consegna al sottosistema nocview
+Un allarme può essere consegnato a destinazioni differenti, le più utilizzate sono la notifica attraverso \verb|SMTP| (email) oppure la consegna al sottosistema \verb|nocview|
 
 % nocview comunicazione
-Un allarme che fa match con la regola di instradamento \verb|store-alarms| viene destinato al sistema di notifica centrale dei laboratori: nocview, la consegna dell'allarme avviene attraverso un modello di comunicazione polling, dove entables salva l'allarme all'interno di un apposita tabella su database e nocview esegue richieste http periodiche per recuperare gli allarmi della data tabella.
+Un allarme che fa match con la regola di instradamento \verb|store-alarms| viene destinato al sistema di notifica centrale dei laboratori: \verb|nocview|, la consegna dell'allarme avviene attraverso un modello di comunicazione polling, dove \verb|entables| salva l'allarme all'interno di un apposita tabella su database e \verb|nocview| esegue richieste http periodiche per recuperare gli allarmi della data tabella.
 Gli allarmi raccolti dalle varie istanze vengono presentati ai membri del team NOC per mezzo di una singola interfaccia web suddivisi per istanza di sanet da cui sono stati estratti.
 
 \begin{figure}[H]
@@ -315,7 +318,7 @@ Gli allarmi raccolti dalle varie istanze vengono presentati ai membri del team N
 % scheduling delle conditions
 Le condition vengono verificate dal sistema applicando uno schema a polling, il demone centrale inserisce nella coda le condition che devono essere verificate e i processi poller consumano le condition in coda e inseriscono i risultati che vengono raccolti dal processo centrale che aggiorna lo stato interno delle conditions.Le code vengono implementate per mezzo del key value store redis
 
-Durante l'esecuzione della condition il poller recupera i valori di tutti i datasource coinvolti nella condition stessa, esegue l'espressione booleana della condition, aggiorna i timegraph con i rispettivi valori e restituisce tutto al demone centrale per mezzo delle code di redis
+Durante l'esecuzione della condition il poller recupera i valori di tutti i datasource coinvolti nella condition stessa, esegue l'espressione booleana della condition, aggiorna i \verb|timegraph| con i rispettivi valori e restituisce tutto al demone centrale per mezzo delle code di redis
 
 \begin{figure}[H]
     \centering
@@ -344,7 +347,47 @@ node my.important.server
 exit
 \end{lstlisting}
 
-Per poter distinguere particolari istanze di interfacce e storage si fa uso del parametro \verb|distinguisher| che viene utilizzato in fase di scansione della tabella SNMP che contiene informazioni sulle interfacce e sugli storage per identificare i dati interessati
+Per poter distinguere particolari istanze di interfacce e storage si fa uso del parametro \verb|distinguisher| che viene utilizzato in fase di scansione della tabella SNMP che contiene informazioni sulle interfacce e sugli storage per identificare i dati interessati.
+
+Il linguaggio di configurazione dei nodi consente inoltre di definire porzioni di configurazione cosiddetti \verb|templates| che consentono di raggruppare datagroup comuni per il monitoraggio di nodi in un unica configurazione e applicare una forma di ereditarietà, per esempio se si vogliono monitorare 10 macchine linux un possibile template e il seguente:
+
+
+\begin{lstlisting}
+node-template server-linux
+    source site
+    description "Server Linux"
+    is-switch false
+    is-router false
+    datagroup clock-hr-tz
+    exit
+    datagroup cpu-hr
+    exit
+    datagroup defgw-mac-change
+    exit
+    datagroup icmp-reachability
+    exit
+    datagroup loadavg-threshold-ucd
+    exit
+    datagroup nonidle-ucd
+    exit
+    datagroup process-vlock-absence
+    exit
+    datagroup ram-usage-ucd
+    exit
+    datagroup reboot-hr
+    exit
+    datagroup snmp-status
+    exit
+    datagroup storage-all-linux
+    exit
+    datagroup swap-ucd
+    exit
+exit
+\end{lstlisting}
+
+I template possono contenere \verb|datagroups,condition,storages,interfaces,services|,essi sono a loro volta classificati in base alla risorsa di cui sono template:
+
+
 
 
 % linguaggio di espressione delle condition TODO
@@ -378,11 +421,9 @@ Per poter distinguere particolari istanze di interfacce e storage si fa uso del 
 %
 %Operazioni ordinarie come l'aggiunta a monitoraggio la modifica di configurazioni di sistema e la gestione di richieste del cliente non può essere svolta in maniera omogenea trasversalmente nelle diverse installazioni
 
-\chapter{Analisi del problema di business}
-Ampia descrizione delle problematiche operative (workflow aziendali non più manutenibili) e di sviluppo (mantenimento dell'applicativo, automazione delle operazioni di ciclo di vita del software) overview di ciò che già e stato fatto e come viene gestito il software in produzione
 
 \chapter{Progettazione della soluzione}
-Progettazione della architettura di produzione del software applicativo, gestione di tutti i componenti critici per la corretta erogazione dei servizi offerti e progettazione del sistema di software management per la gestione del lifecycle, progettazione di tutte le operazioni necessarie per la migrazione alla nuova architettura
+Progettazione della architettura di produzione del software applicativo, gestione di tutti i componenti critici per la corretta erogazione dei servizi offerti e progettazione del sistema di software management per la gestione del life-cycle, progettazione di tutte le operazioni necessarie per la migrazione alla nuova architettura
 
 \chapter{Implementazione}
 Implementazioni delle soluzioni progettate, descrizione delle problematiche incontrate in fase di migrazione e correzioni adottate per sopperire ai problemi
