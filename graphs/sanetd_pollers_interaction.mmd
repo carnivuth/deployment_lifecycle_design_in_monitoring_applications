@@ -3,8 +3,10 @@ A[sanetd]
 B[(redis)]
 C[poller1]
 D[poller2]
+E[pingerd]
 
 A -- stores application data task results --> B
 A -- push tasks --> B
 D -- read tasks --> B
 C -- read tasks --> B
+C & D -- request ICMP test --> E

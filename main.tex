@@ -229,7 +229,7 @@ Dal punto di vista architetturale Sanet e un sistema distribuito basato su Simpl
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{images/sanet_architecture.png}
+    \includegraphics[width=1\linewidth]{build/sanet_architecture.png}
     \caption{architettura di sanet}
     \label{fig:enter-label}
 \end{figure}
@@ -258,7 +258,7 @@ Le condition di un datagroup possono assumere 4 stati diversi:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[height=0.6\linewidth]{images/condition_status.png}
+    \includegraphics[height=0.6\linewidth]{build/condition_status.png}
     \caption{stati di una condition}
     \label{fig:enter-label}
 \end{figure}
@@ -269,12 +269,12 @@ Il linguaggio di configurazione consente di specificare regole di dipendenza tra
 
 \begin{figure}[H]
     \centering
-    \includegraphics[height=0.6\linewidth]{images/dependson_management.png}
+    \includegraphics[height=0.6\linewidth]{build/dependson_management.png}
     \caption{stati di una condition}
     \label{fig:enter-label}
 \end{figure}
 
-% tipologie di oggetti monitorabili TODO
+% tipologie di oggetti monitorabili
 Sanet suddivide gli oggetti monitorabili in macro categorie note nel contesto del monitoraggio di apparati di rete, viene definita la seguente classificazione:
 
 \begin{itemize}
@@ -285,7 +285,7 @@ Sanet suddivide gli oggetti monitorabili in macro categorie note nel contesto de
 
 Per questi oggetti vengono previsti datasource e condition di default come lo stato dello storage o il traffico sulle interfacce.
 
-% generazione e instradamento di allarmi TODO
+% generazione e instradamento di allarmi
 Nel momento in cui una condition transita nello stato \verb|down| viene generato un allarme, questo viene processato dal demone \verb|entables| che determina la corretta destinazione dell'allarme in base a tabelle e catene di regole, in particolare sono previste 2 tabelle principali
 
 \begin{itemize}
@@ -297,7 +297,7 @@ Le tabelle sono composte da catene di regole, nel momento in cui un allarme vien
 
 \begin{figure}[H]
     \centering
-    \includegraphics[height=0.5\linewidth]{images/entables_processing.png}
+    \includegraphics[height=0.5\linewidth]{build/entables_processing.png}
     \caption{funzionamento di entables}
     \label{fig:enter-label}
 \end{figure}
@@ -310,7 +310,7 @@ Gli allarmi raccolti dalle varie istanze vengono presentati ai membri del team N
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{images/sanet_nocview_comunication.png}
+    \includegraphics[width=0.5\linewidth]{build/sanet_nocview_comunication.png}
     \caption{interazione sanet nocview}
     \label{fig:enter-label}
 \end{figure}
@@ -318,16 +318,16 @@ Gli allarmi raccolti dalle varie istanze vengono presentati ai membri del team N
 % scheduling delle conditions
 Le condition vengono verificate dal sistema applicando uno schema a polling, il demone centrale inserisce nella coda le condition che devono essere verificate e i processi poller consumano le condition in coda e inseriscono i risultati che vengono raccolti dal processo centrale che aggiorna lo stato interno delle conditions.Le code vengono implementate per mezzo del key value store redis
 
-Durante l'esecuzione della condition il poller recupera i valori di tutti i datasource coinvolti nella condition stessa, esegue l'espressione booleana della condition, aggiorna i \verb|timegraph| con i rispettivi valori e restituisce tutto al demone centrale per mezzo delle code di redis
+Durante l'esecuzione della condition il poller recupera i valori di tutti i datasource coinvolti nella condition stessa, esegue l'espressione booleana della condition, aggiorna i \verb|timegraph| con i rispettivi valori e restituisce tutto al demone centrale per mezzo delle code di redis. In caso il controllo preveda l'invio di un pacchetto ICMP per verificare la connettività viene coinvolto i demone \verb|pingerd| che si occupa di effettuare le comunicazioni di rete
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{images/sanetd_pollers_interaction.png}
+    \includegraphics[width=0.5\linewidth]{build/sanetd_pollers_interaction.png}
     \caption{interazione sanetd pollers}
     \label{fig:enter-label}
 \end{figure}
 
-% linguaggio di configurazione TODO
+% linguaggio di configurazione
 I nodi da monitorare e i rispettivi \verb|datagroup,storage,service,interface| vengono definiti per mezzo di un apposito linguaggio di configurazione, un esempio e il seguente
 
 \begin{lstlisting}
@@ -385,29 +385,77 @@ node-template server-linux
 exit
 \end{lstlisting}
 
+Dove si definisce il monitoraggio dei servizi base di una macchina linux insieme alle componenti essenziali per le statistiche
 I template possono contenere \verb|datagroups,condition,storages,interfaces,services|,essi sono a loro volta classificati in base alla risorsa di cui sono template:
 
+\begin{itemize}
+  \item \verb|node-templates| templates da applicare al nodo monitorato, possono contenere tutti gli altri template
+  \item \verb|service-templates| templates per singolo servizio applicativo
+  \item \verb|storage-templates| templates per lo storage
+  \item \verb|interface-templates| templates per le interfacce
+  \item \verb|datagroup-templates| templates per singolo datagroup, possono essere contenuti in tutti gli altri template e sono i maggiormente utilizzati
+\end{itemize}
 
+I template piu comuni come quello di cui sopra vengono mantenuti in una raccolta comune a tutte le installazioni detta \verb|library|, essa viene importata all'interno delle istanze di sanet e i template al suo interno vengono customizzati per mezzo di quanto necessario
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/sanet_library.png}
+    \caption{sanet library}
+    \label{fig:enter-label}
+\end{figure}
 
-% linguaggio di espressione delle condition TODO
+% linguaggio di espressione delle condition
+Le espressioni all'interno delle condition fanno uso di un altro linguaggio denominato \verb|sanet standard expression language|, pensato per la manipolazione dei valori di ritorno delle OID SNMP, i controlli fanno uso di funzioni implementate in tale linguaggio, se per esempio si vuole moniotrare la presenza di un servizio all'interno di un nodo la condition si mostrera come segue
 
+\begin{lstlisting}
+condition process_presence
+  expr "(1.3.6.1.2.1.1.1.0@) != '' and isDefined('$swrunindex', catch_timeouts=False) == True"
+exit
+\end{lstlisting}
 
+In ottica di estensibilità il linguaggio consente anche l'esecuzione di binari e script custom, per il monitoraggio di funzionalita non previste dalle funzioni builtin del linguaggio.
 
 % tech stack di sviluppo TODO
+Dal punto di vista di sviluppo sanet e formato da un insieme di moduli python che fanno uso estensivo del framework django per la gestione della webui e della persistenza a database,
+
+% agenti remoti
+Per monitorare i nodi di una data rete e necessario che i processi di sanet possano raggiungere gli apparati interessati, questo in produzione none sempre possibile per una serie di motivi quali partizionamento della rete per suddivisione dei compiti, regole firewall che non consentono il traffico dalla macchina di monitoraggio, inoltre in alcune installazioni geograficamente estese il monitoraggio risulta inefficiente in quanto le distanze rendono le misure di RTT e i timeout troppo stringenti, per affrontare il problema sanet offre la possibilita di utilizzare un poller remoto
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{build/remote_poller_architecture.png}
+    \caption{architettura del poller remoto}
+    \label{fig:enter-label}
+\end{figure}
+
+Il poller remoto e pensato come un servizio stateless che comunica con il demone sanetd per mezzo della istanza di redis del demone sanetd, ottiene la lista di condition da eseguire e restituisce al demone principale i risultati, notare che la comunicazione e iniziata dal poller remoto
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{build/remote_poller_sanetd_interaction.png}
+    \caption{interazione sanetd poller remoto}
+    \label{fig:enter-label}
+\end{figure}
+
+% sum up
+Sanet si mostra come un complesso sistema distribuito in grado di adattarsi al contesto di produzione e fornire agli amministratori della rete un buon potere espressivo nel definire le opearazioni richieste per il monitoraggio
 
 %\subsection{Analisi del contesto aziendale}
 %
-%Per ogni cliente dei Laboratori viene predisposta un istanza del sistema Sanet in una macchina dedicata, l'amministrazione e affidata ai sistemisti che hanno in carico la commessa dello specifico cliente
+%Per ogni cliente dei Laboratori viene predisposta un istanza del sistema Sanet in una macchina dedicata presso l'infrastruttura IT del cliente, l'amministrazione e affidata ai sistemisti che hanno in carico la commessa dello specifico cliente
+%
+%Le richieste di messa a monitoraggio dei clienti vengono svolte dai membri del team o dai membri del Network Operation Center (NOC) a seconda della complessità dell'operazione.
 %
 %\begin{figure}[H]
 %    \centering
-%    \includegraphics[width=1\linewidth]{images/team_schema.png}
+%    \includegraphics[width=1\linewidth]{build/team_schema.png}
 %    \caption{schema operativita team sistemistici}
 %    \label{fig:enter-label}
 %\end{figure}
 %
-%le richieste di messa a monitoraggio dei clienti vengono svolte dai membri del team o dai membri del Network Operation Center (NOC) a seconda della complessità dell'operazione. I clienti possono inoltre richiedere integrazioni ad hoc con software esterni, queste richieste vengono prese in carico dai team di riferimento.
+%I clienti possono inoltre richiedere integrazioni ad hoc con software esterni, queste richieste vengono prese in carico dai team di riferimento.
 %
 %Con il tempo questa gestione ha portato a una frammentazione nelle scelte amministrative delle istanze di sanet e a gravi situazioni di software erosion. Ad ogni richiesta di monitoraggio dei clienti le installazioni di sanet vengono integrate con software esterni per mezzo di componenti sviluppati dai sistemisti.
 %
@@ -420,19 +468,19 @@ I template possono contenere \verb|datagroups,condition,storages,interfaces,serv
 %Questo approccio porta a un problema legato alle gestione delle manutenzioni del software, aggiornamento delle dipendenze e gestione delle manutenzioni ordinarie e straordinarie, per esempio l'aggiornamento dei sorgenti di sanet non può essere apportato in maniera identica su diverse installazioni senza rischiare di rompere integrazioni.
 %
 %Operazioni ordinarie come l'aggiunta a monitoraggio la modifica di configurazioni di sistema e la gestione di richieste del cliente non può essere svolta in maniera omogenea trasversalmente nelle diverse installazioni
-
-
-\chapter{Progettazione della soluzione}
-Progettazione della architettura di produzione del software applicativo, gestione di tutti i componenti critici per la corretta erogazione dei servizi offerti e progettazione del sistema di software management per la gestione del life-cycle, progettazione di tutte le operazioni necessarie per la migrazione alla nuova architettura
-
-\chapter{Implementazione}
-Implementazioni delle soluzioni progettate, descrizione delle problematiche incontrate in fase di migrazione e correzioni adottate per sopperire ai problemi
-
-\chapter{sviluppi futuri}
-Possibili sviluppi futuri sia in ambito architetturale sia per quanto riguarda il sistema di mantenimento dell'installato
-
-\chapter{Conclusioni}
-Considerazioni sulle performance, obbiettivi conseguiti,
+%
+%
+%\chapter{Progettazione della soluzione}
+%Progettazione della architettura di produzione del software applicativo, gestione di tutti i componenti critici per la corretta erogazione dei servizi offerti e progettazione del sistema di software management per la gestione del life-cycle, progettazione di tutte le operazioni necessarie per la migrazione alla nuova architettura
+%
+%\chapter{Implementazione}
+%Implementazioni delle soluzioni progettate, descrizione delle problematiche incontrate in fase di migrazione e correzioni adottate per sopperire ai problemi
+%
+%\chapter{sviluppi futuri}
+%Possibili sviluppi futuri sia in ambito architetturale sia per quanto riguarda il sistema di mantenimento dell'installato
+%
+%\chapter{Conclusioni}
+%Considerazioni sulle performance, obbiettivi conseguiti,
 
 \backmatter
 \addcontentsline{toc}{chapter}{Bibliografia}

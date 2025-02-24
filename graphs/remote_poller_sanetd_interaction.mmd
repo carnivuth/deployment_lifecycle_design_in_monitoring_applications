@@ -1,0 +1,12 @@
+flowchart TD
+subgraph remote_poller
+A[remote poller process]
+B[(redis)]
+end
+subgraph sanet
+C[sanetd]
+D[(redis)]
+end
+A --> B
+A -- stores results and download configuration --> D
+C -- read results and push configuration for remote pollers--> D

@@ -2,12 +2,14 @@ flowchart LR
 A((team 1))
 B((team 2))
 C((team 3))
+H{{NOC}}
 D[(clients requests)]
 E[sanet instance 1]
 F[sanet instance 2]
 G[sanet instance 3]
 
-D --> A & B & C
+D --> A & B & C & H
 A --> E
 B --> F
 C --> G
+H --> E & F & G

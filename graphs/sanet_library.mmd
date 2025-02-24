@@ -1,0 +1,13 @@
+flowchart LR
+subgraph tenant
+A[datagroup template]
+B[service template]
+end
+subgraph library
+C[datagroup template]
+D[service template]
+E[...]
+end
+
+A --inherits from --> C
+B --inherits from --> D
