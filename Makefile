@@ -1,12 +1,12 @@
 BUILDDIR=./build
 
 # target for graph images
-images/%.png: graphs/%.mmd
-	mkdir -p images
+$(BUILDDIR)/%.png: graphs/%.mmd
+	mkdir -p $(BUILDDIR)
 	mmdc -i $< -o $@
 
 # build images from mermaid graphs
-graphs: $(patsubst graphs/%.mmd,images/%.png,$(wildcard graphs/*.mmd))
+graphs: $(patsubst graphs/%.mmd,$(BUILDDIR)/%.png,$(wildcard graphs/*.mmd))
 
 # target for main pdf files
 main.pdf:  main.tex
