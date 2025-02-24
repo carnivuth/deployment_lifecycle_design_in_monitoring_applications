@@ -1,7 +1,9 @@
 stateDiagram-v2
     [*] --> Up
     Up --> Failing
-
     Failing --> Down
     Failing --> Up
     Down --> Up
+    Up --> Uncheackable
+    Failing --> Uncheackable
+    Down --> Uncheackable

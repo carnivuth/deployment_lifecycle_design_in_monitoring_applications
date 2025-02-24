@@ -1,0 +1,7 @@
+sequenceDiagram
+participant nocview
+participant sanet_instance
+loop sanet_instances
+sanet_instance ->> sanet_instance: save alarms to store alarms table
+nocview ->> sanet_instance: get stored alarms
+end

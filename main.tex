@@ -1,26 +1,3 @@
-%%%%
-% Istruzioni per iniziare
-% 1. stabilire un titolo provvisorio
-% 2. inserire uno o più correlatori, se presenti, in caso di tirocinio inserire almeno il tutor aziendale
-% 3. preparare un indice provvisorio, a partire dalla struttura base che contiene:
-%   a. contesto della tesi o del tirocinio
-%   b. background teorico, evitare di riportare concetti già studiati durante i corsi universitari, per questi basta una brevissima menzione con eventuale bibliografia
-%   c. background tecnologico, se pertinente
-%   d. sviluppo
-%   e. descrizione dell'apparato sperimentale e degli esperimenti, se presenti
-%   f. in caso di esperimenti, creare un progetto github che contenga codice e dati (se possibile) e condividere con il docente. NB: in caso di tirocinio in azienda chiedere il permesso all'azienda, in caso diniego non condividere
-%   g. conclusioni e possibili sviluppi futuri
-% 4. in linea di massima la tesi (indicativamente non meno di 50 pagine) deve essere pronta in versione molto avanzata quattro settimane prima della discussione, comunicare al docente quando si richiedono consigli o discussioni, non inviare files via mail, la condivisione avviene tramite overleaf, i commenti saranno riportati direttamente lì
-% 5. chiedere appuntamenti se è necessaria una discussione a voce
-%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%
-% NON SUDDIVIDERE IL TESTO DELLA TESI IN PIU' FILE LATEX
-% COMPILARE LA TESI USANDO QUESTO UNICO FILE DI ESEMPIO PER I CONTENUTI TESTUALI
-% LE ISTRUZIONI PER REDIGERE LA BIBLIOGRAFIA SONO A FINE FILE
-% LE PARTI DI CODICE PIU' RILEVANTI SI INCLUDONO NELLA TESI GENERANDO IL LATEX DA COLAB O CON ALTRI PACKAGE SPECIFICI
-%%%%%%%%%%%%%
-
 \documentclass[12pt,a4paper,twoside,openright]{book}
 
 % instead of paragraph indentation on first line and no spacing
@@ -195,7 +172,7 @@ Il problema si presenta in maniera ancora maggiore quando la separazione dei con
 
 \begin{itemize}
     \item dipendenze software non aggiornate che portano a incompatibilità applicative con standard dell'industria
-    \item degradazione delle performance dovuta a dischi
+    \item degradazione delle performance dovuta al riempimento dei dischi
     \item sistemi insicuri, dovuti al degrado di protocolli di cifratura utilizzati per le comunicazioni
 \end{itemize}
 
@@ -239,7 +216,7 @@ I requisti richiesti hanno come scopo ultimo quello di ridurre la quantità di o
 
 Il business principale dei laboratori Marconi consiste nel monitoraggio di apparati e servizi applicativi, per erogare tale servizio e non dipendere da software esterno l'azienda ha deciso di sviluppare la sua soluzione di monitoraggio proprietaria: Sanet.
 
-Dal punto di vista architetturale Sanet e un sistema distribuito basato su Simple network message protocol (SNMP), composto da processi demoni di varia natura tra cui:
+Dal punto di vista architetturale Sanet e un sistema distribuito basato su Simple network message protocol (\verb|SNMP|), composto da processi demoni di varia natura tra cui:
 
 \begin{itemize}
     \item demoni per lo storage dei dati
@@ -265,12 +242,12 @@ L'architettura si compone di un demone principale sanetd che svolge i seguenti c
 \end{itemize}
 
 % datagroups
-I task generati dal demone principale vengono denominati datagroups, un datagroup e la composizione di tre elementi principali:
+I task generati dal demone principale vengono denominati \verb|datagroups|, un datagroup e la composizione di tre elementi principali:
 
 \begin{itemize}
-  \item datasource sorgente dei dati, specifica le modalita con cui i dati devono essere reperiti, per esempio possono essere specificate OID SNMP, files, risorse web
-  \item condition controllo da effettuare sui datasource interessati, le condition sono la sorgente degli allarmi generati
-  \item timegraph contengono informazioni sullo storico del determinato datasource, per esempio le statistiche di banda consumata per una data interfaccia di rete
+  \item \verb|datasource| sorgente dei dati, specifica le modalita con cui i dati devono essere reperiti, per esempio possono essere specificate OID SNMP, files, risorse web
+  \item \verb|condition| controllo da effettuare sui datasource interessati, le condition sono la sorgente degli allarmi generati
+  \item \verb|timegraph| contengono informazioni sullo storico del determinato datasource, per esempio le statistiche di banda consumata per una data interfaccia di rete
 \end{itemize}
 
 % conditions
@@ -278,22 +255,67 @@ Le condition di un datagroup possono assumere 4 stati diversi:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[height=0.5\linewidth]{images/condition_status.png}
+    \includegraphics[height=0.6\linewidth]{images/condition_status.png}
     \caption{stati di una condition}
     \label{fig:enter-label}
 \end{figure}
 
-La transizione da uno stato all'altro avviene subito dopo l'esecuzione di una condition da parte di un poller, in particolare nel momento in cui l'espressione booleana della condition risulta falsa essa transiziona in stato failing, al raggiungimento di un numero di tentativi falliti configurabile il controllo passa in stato down.
+La transizione da uno stato all'altro avviene subito dopo l'esecuzione di una condition da parte di un poller, in particolare nel momento in cui l'espressione booleana della condition risulta falsa essa transiziona in stato \verb|failing|, al raggiungimento di un numero di tentativi falliti configurabile il controllo passa in stato \verb|down|, se il poller non riesce a valutare la condizione peresempio per irraggiungibilita del nodo o per fallimento di servizi necessari la condition transita in stato \verb|uncheckable|.
+
+Il linguaggio di configurazione consente di specificare regole di dipendenza tra vari check per mezzo del parametro \verb|dependson|, una data condition che e in \verb|dependson| di un altra non viene verificata se le condition da cui dipende non si trovano in stato \verb|UP|, in caso questo non sia verificato la condition passa in stato \verb|uncheackable|
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.6\linewidth]{images/dependson_management.png}
+    \caption{stati di una condition}
+    \label{fig:enter-label}
+\end{figure}
 
 % tipologie di oggetti monitorabili TODO
-Sanet suddivide gli oggetti monitorabili in macro categorie
+Sanet suddivide gli oggetti monitorabili in macro categorie note nel contesto del monitorraggio di apparati di rete, viene definita la seguente classificazione:
+
+\begin{itemize}
+  \item storage: supporti di memoria di vario genere sia fisici che virtuali
+  \item service: servizi di qualunque entita, generalmente processi demoni
+  \item interface: Interfacce di rete del nodo monitorato
+\end{itemize}
+
+Per questi oggetti vengono previsti datasource e condition di default come lo stato dello storage o il traffico sulle interfacce.
+
 % genearazione e instradamento di allarmi TODO
+Nel momento in cui una condition transita nello stato down viene generato un allarme, questo viene processato dal demone entables che determina la corretta destinazione dell'allarme in base a tabelle e catene di regole, in particolare sono previste 2 tabelle principali
+
+\begin{itemize}
+  \item tabella di mangle: utilizzata per arricchire l'allarme di metadati per il processing da parte di sistemi esterni
+  \item tabella di filter: questa tabella e quella dove il pacchetto viene instradato al corretto destinatario
+\end{itemize}
+
+Le tabelle sono composte da catene di regole, nel momento in cui un allarme viene processato da entables questo scorre tutte le catene definite e se una data regola nella catena fa match con gli attributi dell'allarme vengono applicate le azioni di quella determinata regola e si procede alla regola successiva
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.5\linewidth]{images/entables_processing.png}
+    \caption{funzionamento di entables}
+    \label{fig:enter-label}
+\end{figure}
+
+Gli un allarme puo essere consegnato a destinazioni differenti, le piu utilizzate sono la notifica attraverso \verb|SMTP| (email) oppure la consegna al sottosistema nocview
+
+% nocview comunicazione
+Un allarme che fa match con la regola di instradamento \verb|store-alarms| viene destinato al sistema di notifica centrale dei laboratori: nocview, la consegna dell'allarme avviene attraverso un modello di comunicazione polling, dove entables salva l'allarme all'interno di un apposita tabella su database e nocview esegue richieste http periodiche per recuperare gli allarmi della data tabella.
+Gli allarmi raccolti dalle varie istanze vengono presentati ai membri del team NOC per mezzo di una singola interfaccia web suddivisi per istanza di sanet da cui sono stati estratti.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/sanet_nocview_comunication.png}
+    \caption{interazione sanet nocview}
+    \label{fig:enter-label}
+\end{figure}
 
 % scheduling delle conditions
 Le condition vengono verificate dal sistema applicando uno schema a polling, il demone centrale inserisce nella coda le condition che devono essere verificate e i processi poller consumano le condition in coda e inseriscono i risultati che vengono raccolti dal processo centrale che aggiorna lo stato interno delle conditions.Le code vengono implementate per mezzo del key value store redis
 
 Durante l'esecuzione della condition il poller recupera i valori di tutti i datasource coinvolti nella condition stessa, esegue l'espressione booleana della condition, aggiorna i timegraph con i rispettivi valori e restituisce tutto al demone centrale per mezzo delle code di redis
-
 
 \begin{figure}[H]
     \centering
@@ -303,35 +325,58 @@ Durante l'esecuzione della condition il poller recupera i valori di tutti i data
 \end{figure}
 
 % linguaggio di configurazione TODO
+I nodi da monitorare e i rispettivi \verb|datagroup,storage,service,interface| vengono definiti per mezzo di un apposito linguaggio di configurazione, un esempio e il seguente
 
-I task vengono descritti secondo un linguaggio di configurazione interno al'applicazione, che
+\begin{lstlisting}
+node my.important.server
+    agent main-agent
+    description "Critical service for production, needs to be monitored"
+    icon linux
+    datagroup important datagroup
+      condition important condition
+      expr "2>1"
+      exit
+    exit
+    storage rootfs distinguisher /
+    exit
+    interface ethernet distinguisher eth0
+    exit
+exit
+\end{lstlisting}
+
+Per poter distinguere particolari istanze di interfacce e storage si fa uso del parametro \verb|distinguisher| che viene utilizzato in fase di scansione della tabella SNMP che contiene informazioni sulle interfacce e sugli storage per identificare i dati interessati
+
 
 % linguaggio di espressione delle condition TODO
 
-\subsection{Analisi del contesto aziendale}
 
-Per ogni cliente dei Laboratori viene predisposta un istanza del sistema Sanet in una macchina dedicata, l'amministrazione e affidata ai sistemisti che hanno in carico la commessa dello specifico cliente
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\linewidth]{images/team_schema.png}
-    \caption{schema operativita team sistemistici}
-    \label{fig:enter-label}
-\end{figure}
+% tech stack di sviluppo TODO
 
-le richieste di messa a monitoraggio dei clienti vengono svolte dai membri del team o dai membri del Network Operation Center (NOC) a seconda della complessità dell'operazione. I clienti possono inoltre richiedere integrazioni ad hoc con software esterni, queste richieste vengono prese in carico dai team di riferimento.
-
-Con il tempo questa gestione ha portato a una frammentazione nelle scelte amministrative delle istanze di sanet e a gravi situazioni di software erosion. Ad ogni richiesta di monitoraggio dei clienti le installazioni di sanet vengono integrate con software esterni per mezzo di componenti sviluppati dai sistemisti.
-
-Queste componenti software non vengono sottoposte a versioning o documentazione estensiva e lo sviluppo non e in grado di tenerne traccia, inoltre non e previsto un controllo delle dipendenze ne una procedura di deployment.
-
-Non e in frequente, inoltre che queste integrazioni condividano dipendenze in comune con Sanet, queste possono mostrarsi sotto la forma di librerie ma anche di istanze di servizi software come redis o postgres
-
-Le integrazioni si interfacciano con Sanet per mezzo di API non standard che possono spaziare da formato di file generati dal sistema a output da command line interface.
-
-Questo approccio porta a un problema legato alle gestione delle manutenzioni del software, aggiornamento delle dipendenze e gestione delle manutenzioni ordinarie e straordinarie, per esempio l'aggiornamento dei sorgenti di sanet non può essere apportato in maniera identica su diverse installazioni senza rischiare di rompere integrazioni.
-
-Operazioni ordinarie come l'aggiunta a monitoraggio la modifica di configurazioni di sistema e la gestione di richieste del cliente non può essere svolta in maniera omogenea trasversalmente nelle diverse installazioni
+%\subsection{Analisi del contesto aziendale}
+%
+%Per ogni cliente dei Laboratori viene predisposta un istanza del sistema Sanet in una macchina dedicata, l'amministrazione e affidata ai sistemisti che hanno in carico la commessa dello specifico cliente
+%
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=1\linewidth]{images/team_schema.png}
+%    \caption{schema operativita team sistemistici}
+%    \label{fig:enter-label}
+%\end{figure}
+%
+%le richieste di messa a monitoraggio dei clienti vengono svolte dai membri del team o dai membri del Network Operation Center (NOC) a seconda della complessità dell'operazione. I clienti possono inoltre richiedere integrazioni ad hoc con software esterni, queste richieste vengono prese in carico dai team di riferimento.
+%
+%Con il tempo questa gestione ha portato a una frammentazione nelle scelte amministrative delle istanze di sanet e a gravi situazioni di software erosion. Ad ogni richiesta di monitoraggio dei clienti le installazioni di sanet vengono integrate con software esterni per mezzo di componenti sviluppati dai sistemisti.
+%
+%Queste componenti software non vengono sottoposte a versioning o documentazione estensiva e lo sviluppo non e in grado di tenerne traccia, inoltre non e previsto un controllo delle dipendenze ne una procedura di deployment.
+%
+%Non e in frequente, inoltre che queste integrazioni condividano dipendenze in comune con Sanet, queste possono mostrarsi sotto la forma di librerie ma anche di istanze di servizi software come redis o postgres
+%
+%Le integrazioni si interfacciano con Sanet per mezzo di API non standard che possono spaziare da formato di file generati dal sistema a output da command line interface.
+%
+%Questo approccio porta a un problema legato alle gestione delle manutenzioni del software, aggiornamento delle dipendenze e gestione delle manutenzioni ordinarie e straordinarie, per esempio l'aggiornamento dei sorgenti di sanet non può essere apportato in maniera identica su diverse installazioni senza rischiare di rompere integrazioni.
+%
+%Operazioni ordinarie come l'aggiunta a monitoraggio la modifica di configurazioni di sistema e la gestione di richieste del cliente non può essere svolta in maniera omogenea trasversalmente nelle diverse installazioni
 
 \chapter{Analisi del problema di business}
 Ampia descrizione delle problematiche operative (workflow aziendali non più manutenibili) e di sviluppo (mantenimento dell'applicativo, automazione delle operazioni di ciclo di vita del software) overview di ciò che già e stato fatto e come viene gestito il software in produzione

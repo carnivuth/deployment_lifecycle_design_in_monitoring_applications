@@ -1,0 +1,6 @@
+sequenceDiagram
+participant poller
+poller ->> poller: check dependson condition
+alt depends on condition are up
+poller ->> poller: check actual condition
+end

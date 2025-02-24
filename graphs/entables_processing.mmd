@@ -1,0 +1,8 @@
+sequenceDiagram
+participant entables
+loop rules in chain
+entables ->> entables: check if rules matches alarm
+alt rule matched
+entables ->> entables: apply rule to packet
+end
+end
