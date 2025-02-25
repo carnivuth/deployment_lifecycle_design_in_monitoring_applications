@@ -7,9 +7,13 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: write
+
     runs-on: ubuntu-22.04
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -34,4 +38,4 @@ jobs:
       - name: Create release file
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "./build/main.pdf"
+          artifacts: "build/main.pdf"
