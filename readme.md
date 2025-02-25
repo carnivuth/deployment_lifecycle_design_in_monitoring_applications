@@ -2,6 +2,10 @@
 
 Lavoro di tesi magistrale svolto presso i Laboratori Guglielmo Marconi, dedicato alla progettazione e al management del software lifecicle del sistema di monitoraggio Sanet
 
+## Visionare l'elaborato
+
+L'ultima versione dell'elaborato e disponibile nelle [releases](https://github.com/carnivuth/deployment_lifecycle_design_in_monitoring_applications/releases)
+
 ## Setup ambiente di sviluppo
 
 - clonare la repository
