@@ -12,7 +12,6 @@ graphs: $(patsubst graphs/%.mmd,$(BUILDDIR)/%.png,$(wildcard graphs/*.mmd))
 main.pdf:  main.tex
 	mkdir -p $(BUILDDIR)
 	latexmk -pdf -outdir=$(BUILDDIR) $<
-	rm -rf *.aux *.log *.lof *.gz *.toc *.bak~ *.blg
 
 clean:
 	rm -rf $(BUILDDIR)
