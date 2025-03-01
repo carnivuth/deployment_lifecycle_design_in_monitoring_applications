@@ -1,0 +1,14 @@
+sequenceDiagram
+participant cron
+participant poller
+participant redis
+participant filesystem
+
+cron ->> cron: execute integration script
+alt
+cron ->> filesystem: write output to file
+poller ->> filesystem: reads data from file
+else
+cron ->> redis: add key with data
+poller ->> redis: read keys
+end

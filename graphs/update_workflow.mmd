@@ -1,0 +1,9 @@
+
+sequenceDiagram
+participant NAD
+participant sanet_sources
+participant NMS_team
+participant sanet_instance
+NAD ->> sanet_sources: push update to sanet source code
+NAD ->> NMS_team: notify that sanet needs to be updated
+NMS_team ->> sanet_instance: updates sanet instance

@@ -1,0 +1,21 @@
+flowchart LR
+subgraph sanet virtual environment
+A[sanetd]
+B[poller]
+H((entables))
+I{{sanet wsgi}}
+end
+C[pingerd]
+D[(redis)]
+E[(postgres)]
+F[apache2]
+G[rrdcached]
+
+A -- starts and monitor --> B & H & C
+F -- start and send HTTP requests --> I
+I -- retrives information --> E
+A --stores data --> E
+A -- cache and task queue --> D
+B --> D
+B -- send icmp packets--> C
+A --stores timelines --> G

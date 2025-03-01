@@ -4,9 +4,15 @@ B((team 2))
 C((team 3))
 H{{NOC}}
 D[(clients requests)]
+subgraph client 1 infrastructure
 E[sanet instance 1]
+end
+subgraph client 2 infrastructure
 F[sanet instance 2]
+end
+subgraph client 3 infrastructure
 G[sanet instance 3]
+end
 
 D --> A & B & C & H
 A --> E

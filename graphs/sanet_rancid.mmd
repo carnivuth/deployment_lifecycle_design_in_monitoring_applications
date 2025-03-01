@@ -1,0 +1,18 @@
+sequenceDiagram
+participant cron
+participant sanet3rancid3
+participant sanet
+participant rancid-run
+participant network-appliance
+
+cron ->> sanet3rancid3: execute
+activate sanet3rancid3
+sanet3rancid3 ->> sanet: retrive appliances informations
+sanet3rancid3 ->> sanet3rancid3: writes cloginrc
+sanet3rancid3 ->> sanet3rancid3: writes updates
+deactivate sanet3rancid3
+cron ->> rancid-run: execute
+activate rancid-run
+rancid-run ->> network-appliance: backup configurations
+deactivate rancid-run
+

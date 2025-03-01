@@ -1,0 +1,11 @@
+sequenceDiagram
+participant poller
+participant bind
+participant client_dns
+
+bind ->> client_dns: ask zones at startup
+ rect rgb(200, 150, 255)
+loop until stop
+poller ->> bind: resolve addresses
+end
+end
