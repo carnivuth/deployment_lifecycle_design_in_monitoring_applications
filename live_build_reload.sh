@@ -1,5 +1,5 @@
 #!/bin/bash
-TARGET_FILES="main.tex graphs/*"
+TARGET_FILES="main.tex graphs/* chapters/*"
 BUILDDIR="./build"
 # event ignored captured cause vim replace file with swapfile and does not generate modify event
 while true; do
