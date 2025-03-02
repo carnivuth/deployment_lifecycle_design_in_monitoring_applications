@@ -1,0 +1,20 @@
+flowchart TD
+subgraph sanet infrastructure
+direction LR
+subgraph main
+direction TB
+A[sanetd]
+B[(postgres)]
+end
+subgraph backup
+direction TB
+C[sanetd]
+D[(postgres)]
+end
+end
+
+E[\appliance/]
+
+A --> B
+C --> D
+main & backup --monitors --> E

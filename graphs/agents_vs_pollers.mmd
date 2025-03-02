@@ -1,0 +1,11 @@
+flowchart LR
+subgraph sanet
+direction LR
+A[sanetd]
+B[poller]
+C((agent 1))
+D((agent 2))
+end
+
+
+A -- fork --> B --forks --> C & D
