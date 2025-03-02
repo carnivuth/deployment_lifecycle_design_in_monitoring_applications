@@ -1,9 +1,10 @@
 BUILDDIR=./build
+THEME=forest
 
 # target for graph images
 $(BUILDDIR)/%.png: graphs/%.mmd
 	mkdir -p $(BUILDDIR)
-	mmdc -i $< -o $@
+	mmdc -t $(THEME) -i $< -o $@
 
 # build images from mermaid graphs
 graphs: $(patsubst graphs/%.mmd,$(BUILDDIR)/%.png,$(wildcard graphs/*.mmd))
