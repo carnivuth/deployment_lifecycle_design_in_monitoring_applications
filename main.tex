@@ -275,7 +275,7 @@ Il linguaggio di configurazione consente di specificare regole di dipendenza tra
 \end{figure}
 
 % tipologie di oggetti monitorabili
-Sanet suddivide gli oggetti monitorabili in macro categorie note nel contesto del monitoraggio di apparati di rete, viene definita la seguente classificazione:
+Sanet suddivide gli oggetti da sottoporre al monitoraggio in macro categorie note nel contesto del monitoraggio di apparati di rete, viene definita la seguente classificazione:
 
 \begin{itemize}
   \item storage: supporti di memoria di vario genere sia fisici che virtuali
@@ -396,7 +396,7 @@ I template possono contenere \verb|datagroups,condition,storages,interfaces,serv
   \item \verb|datagroup-templates| templates per singolo datagroup, possono essere contenuti in tutti gli altri template e sono i maggiormente utilizzati
 \end{itemize}
 
-I template piu comuni come quello di cui sopra vengono mantenuti in una raccolta comune a tutte le installazioni detta \verb|library|, essa viene importata all'interno delle istanze di sanet e i template al suo interno vengono customizzati per mezzo di quanto necessario
+I template più comuni come quello di cui sopra vengono mantenuti in una raccolta comune a tutte le installazioni detta \verb|library|, essa viene importata all'interno delle istanze di sanet e i template al suo interno vengono personalizzati per mezzo di quanto necessario
 
 \begin{figure}[H]
     \centering
@@ -406,7 +406,7 @@ I template piu comuni come quello di cui sopra vengono mantenuti in una raccolta
 \end{figure}
 
 % linguaggio di espressione delle condition
-Le espressioni all'interno delle condition fanno uso di un altro linguaggio denominato \verb|sanet standard expression language|, pensato per la manipolazione dei valori di ritorno delle OID SNMP, i controlli fanno uso di funzioni implementate in tale linguaggio, se per esempio si vuole moniotrare la presenza di un servizio all'interno di un nodo la condition si mostrera come segue
+Le espressioni all'interno delle condition fanno uso di un altro linguaggio denominato \verb|sanet standard expression language|, pensato per la manipolazione dei valori di ritorno delle OID SNMP, i controlli fanno uso di funzioni implementate in tale linguaggio, se per esempio si vuole monitorare la presenza di un servizio all'interno di un nodo la condition si mostrerà come segue
 
 \begin{lstlisting}
 condition process_presence
@@ -414,13 +414,13 @@ condition process_presence
 exit
 \end{lstlisting}
 
-In ottica di estensibilità il linguaggio consente anche l'esecuzione di binari e script custom, per il monitoraggio di funzionalita non previste dalle funzioni builtin del linguaggio.
+In ottica di estensibilità il linguaggio consente anche l'esecuzione di binari e script custom, per il monitoraggio di funzionalità non previste dalle funzioni builtin del linguaggio.
 
 % tech stack di sviluppo TODO
 Dal punto di vista di sviluppo sanet e formato da un insieme di moduli python che fanno uso estensivo del framework django per la gestione della webui e della persistenza a database,
 
 % agenti remoti
-Per monitorare i nodi di una data rete e necessario che i processi di sanet possano raggiungere gli apparati interessati, questo in produzione none sempre possibile per una serie di motivi quali partizionamento della rete per suddivisione dei compiti, regole firewall che non consentono il traffico dalla macchina di monitoraggio, inoltre in alcune installazioni geograficamente estese il monitoraggio risulta inefficiente in quanto le distanze rendono le misure di RTT esagerate e i timeout troppo stringenti, per affrontare il problema sanet offre la possibilita di utilizzare un poller remoto
+Per monitorare i nodi di una data rete e necessario che i processi di sanet possano raggiungere gli apparati interessati, questo in produzione none sempre possibile per una serie di motivi quali partizionamento della rete per suddivisione dei compiti, regole firewall che non consentono il traffico dalla macchina di monitoraggio, inoltre in alcune installazioni geograficamente estese il monitoraggio risulta inefficiente in quanto le distanze rendono le misure di RTT esagerate e i timeout troppo stringenti, per affrontare il problema sanet offre la possibilità di utilizzare un poller remoto
 
 \begin{figure}[H]
     \centering
@@ -438,8 +438,18 @@ Il poller remoto e pensato come un servizio stateless che comunica con il demone
     \label{fig:enter-label}
 \end{figure}
 
+Sanet modella le entita che eseguono le condition come \verb|agenti|, ogni agente e affidato a un poller e ogni poller corrisponde a un set di processi pesanti unix e un sottoinsieme di thread python dedicati al particolare agente:
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{build/agents_vs_pollers.png}
+    \caption{relazione tra poller e agenti}
+    \label{fig:enter-label}
+\end{figure}
+
 % sum up
-Sanet si mostra come un complesso sistema distribuito in grado di adattarsi al contesto di produzione e fornire agli amministratori della rete un buon potere espressivo nel definire le opearazioni richieste per il monitoraggio
+Sanet si mostra come un complesso sistema distribuito in grado di adattarsi al contesto di produzione e fornire agli amministratori della rete un buon potere espressivo nel definire le operazioni richieste per il monitoraggio
 
 \subsection{Analisi del contesto aziendale}
 
@@ -452,7 +462,7 @@ Le richieste di messa a monitoraggio dei clienti vengono svolte dai membri del t
 \begin{figure}[H]
     \centering
     \includegraphics[height=0.6\linewidth]{build/team_schema.png}
-    \caption{schema operativita team sistemistici}
+    \caption{schema operatività team sistemistici}
     \label{fig:enter-label}
 \end{figure}
 
@@ -493,7 +503,7 @@ L'area NAD fornisce sanet sotto forma di repository subversion contenenti i sorg
 \end{figure}
 
 % sanet e bind locale
-Il sistema sanet, data la necessita di effettuare richieste di rete in maniera periodica genera un flusso costante di richieste DNS, questo porta a una degradazione delle prestazioni della rete e a statistiche di monitoraggio viziate come valori di RTT piu alti e traffico in uscita dagli apparati di rete aumentato. Per miglioare la situazione e rendere il sistema piu fault tollerant si introduce un server dns locale al processo poller, questo si comporta da slave del DNS master del cliente, scarica le zone all'avvio e effettua la risoluzione dei nomi localmente al sistema sanet azzerando il traffico di rete.
+Il sistema sanet, data la necessita di effettuare richieste di rete in maniera periodica genera un flusso costante di richieste DNS, questo porta a una degradazione delle prestazioni della rete e a statistiche di monitoraggio viziate come valori di RTT più alti e traffico in uscita dagli apparati di rete aumentato. Per migliorare la situazione e rendere il sistema più fault tolerant si introduce un server DNS locale al processo poller, questo si comporta da slave del DNS master del cliente, scarica le zone all'avvio e effettua la risoluzione dei nomi localmente al sistema sanet azzerando il traffico di rete.
 
 
 \begin{figure}[H]
@@ -506,7 +516,7 @@ Il sistema sanet, data la necessita di effettuare richieste di rete in maniera p
 In questo modo sanet e in grado di continuare a erogare il servizio anche in caso di guasti al servizio DNS.
 
 % sanet e le estensioni per il monitoraggio
-Le integrazioni per monitoraggi si preesentano sotto molte forme, quelle maggiormente riscontrate in produzione sono:
+Le integrazioni per monitoraggi si presentano sotto molte forme, quelle maggiormente riscontrate in produzione sono:
 
 \begin{itemize}
   \item{script bash o python eseguiti direttamente dal poller}
@@ -525,9 +535,9 @@ In caso di esecuzione per mezzo di cron l'integrazione e sanet interagiscono in 
 Le competenze delle integrazioni possono variare da controlli infrastrutturali che monitorano lo stato di particolari servizi come tunnel vpn, backup job di virtualizzatori, stato di tablespaces oracle oppure monitorare particolari API di sistemi complessi come VMware.
 
 % sanet e rancid
-Una delle principali funzionalita che offre sanet e quella di monitorare apparati di rete che espongono agenti SNMP, uno dei compiti assegnati alla macchina di monitoraggio dai sistemisti e anche quello di eseguire il backup periodico degli apparati per mezzo del tool really awesome cisco config differ (\verb|rancid|).
+Una delle principali funzionalità che offre sanet e quella di monitorare apparati di rete che espongono agenti SNMP, uno dei compiti assegnati alla macchina di monitoraggio dai sistemisti e anche quello di eseguire il backup periodico degli apparati per mezzo del tool \verb|really awesome cisco config differ| (\verb|rancid|).
 
-Il programma rancid sfrutta il programma \verb|clogin| per connettersi agli apparati, esegue dunque uno script perl per recuperare le informazioni di configurazione dell'apparato in forma testuale e ne salva le modifiche per mezzo di un sistema di controllo di versione.
+Il programma rancid sfrutta il programma \verb|clogin| per connettersi agli apparati, esegue dunque uno script \verb|perl| per recuperare le informazioni di configurazione dell'apparato in forma testuale e ne salva le modifiche per mezzo di un sistema di controllo di versione.
 
 Per evitare di configurare rancid manualmente i sistemisti hanno sviluppato un integrazione con sanet che data una struttura dati che fa uso dei tag di sanet per recuperare dinamicamente la lista di nodi che devono essere sottoposti alla procedura di backup di rancid
 
@@ -540,6 +550,13 @@ Per evitare di configurare rancid manualmente i sistemisti hanno sviluppato un i
 
 % sanet di backup
 Per garantire il servizio anche in caso di guasti fisici all'infrastruttura che ospita il sistema in alcune installazioni grandi di sanet viene predisposta una seconda istanza parallela, questa esegue in maniera parallela alla precedente e il database di sanet viene mantenuto sincronizzato con la produzione principale, in caso di guasti l'istanza secondaria sostituisce la principale nell'invio delle notifiche al sistema \verb|nocview|
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{build/sanet_backup.png}
+    \caption{Ridondanza nelle installazioni di sanet}
+    \label{fig:enter-label}
+\end{figure}
 
 % problematiche insorte
 %Con il tempo questa gestione ha portato a una frammentazione nelle scelte amministrative delle istanze di sanet e a gravi situazioni di software erosion. Ad ogni richiesta di monitoraggio dei clienti le installazioni di sanet vengono integrate con software esterni per mezzo di componenti sviluppati dai sistemisti.
