@@ -1,0 +1,29 @@
+\chapter{Introduzione, background teorico e tecnologico}
+
+La manutenzione e il monitoraggio di un software in produzione e fondamentale per prevenire fenomeni di software erosion, gestire il software life-cycle nelle grandi installazioni e' sempre molto costoso, specialmente se il core business non e lo sviluppo software ma il servizio erogato tramite esso.
+
+Il problema si presenta in maniera ancora maggiore quando la separazione dei contesti dovuta all'espansione del parco clienti porta a un crescere sempre maggiore del numero di istanze del software in produzione che erogano il servizio, gli effetti più comuni della software erosion sono:
+
+\begin{itemize}
+    \item dipendenze software non aggiornate che portano a incompatibilità applicative con standard dell'industria
+    \item degradazione delle performance dovuta al riempimento dei dischi
+    \item sistemi insicuri, dovuti al degrado di protocolli di cifratura utilizzati per le comunicazioni
+\end{itemize}
+
+Queste problematiche possono diventare causa di forti rallentamenti al workflow aziendale, specialmente se ignorati per molto tempo, impedendo agli utenti amministratori l'utilizzo del software dato che questi si vedono costretti a impiegare le loro risorse in operazioni di manutenzione del software che spesso e volentieri non sono risolutive del problema.
+
+Un esempio può essere l'installazione manuale di dipendenze applicative, rese obsolete da aggiornamenti dell'ambiente di esecuzione ma necessarie all'applicazione per funzionare risultando in ambienti non solo instabili ma anche insicuri.
+
+La software erosion incide anche sullo sviluppo del software in produzione, dato che l'aggiornamento di istanze "dimenticate" può richiedere troppe risorse invogliando cosi all'implementazione di workaround pur di soddisfare esigenze di servizio. In queste situazioni l'istanza in produzione e soggetta a una "morsa a tenaglia" dove il ciclo di rilascio del software si deve scontrare con integrazioni applicative sviluppate dagli utenti sistemisti che sfruttano API "non convenzionali" per arricchire le funzionalità del sistema stesso.
+
+Il problema risulta accentuato se lo sviluppo non prevede la produzione e l'utilizzo di artefatti per la messa in produzione del software, in questo caso le infrastrutture in produzione sono alla merce di procedure di installazione manuali che portano a una frammentazione degli ambienti in produzione. La creazione di artefatti, specialmente per sistemi software complessi, non deve prevedere solo la messa in funzione delle componenti applicative sviluppate a doc ma anche di tutti i possibili servizi di cui l'applicazione necessita come:
+
+\begin{itemize}
+    \item servizi di data storage (databases,demoni cache)
+    \item servizi web
+    \item demoni per l'esecuzione di manutenzioni programmate
+\end{itemize}
+
+Per affrontare il problema sono nati i container, ambienti che sfruttano la funzionalità del kernel linux namespaces per isolare processi applicativi su differenti livelli. Questi sistemi offrono spesso approcci dichiarativi al problema consentendo allo sviluppatore la riproducibilità dell'ambiente di esecuzione e testing. Inoltre consentono di uniformare l'interfaccia fra sviluppo e operazioni di devops e rendere lo sviluppo consapevole dell'ambiente di produzione già in fase di progettazione.
+
+I container offrono la possibilità allo sviluppo di progettare il funzionamento di features applicative che necessitano di un determinato supporto runtime dall'ambiente di produzione, per esempio assicurarsi della raggiungibilità via rete dei componenti dell'applicazione, creare ambienti di test in agilità simulando interazioni fra vari nodi in rete, testare integrazioni con altri ambienti prima di aggiornare la produzione
