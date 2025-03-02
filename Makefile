@@ -4,7 +4,7 @@ THEME=forest
 # target for graph images
 $(BUILDDIR)/%.png: graphs/%.mmd
 	mkdir -p $(BUILDDIR)
-	mmdc -t $(THEME) -i $< -o $@
+	mmdc -t $(THEME) -c graphs/mermaid.config.json -i $< -o $@
 
 # build images from mermaid graphs
 graphs: $(patsubst graphs/%.mmd,$(BUILDDIR)/%.png,$(wildcard graphs/*.mmd))
