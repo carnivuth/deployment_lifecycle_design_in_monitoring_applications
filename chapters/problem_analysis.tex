@@ -3,8 +3,7 @@
 
 \subsection{Analisi dell'applicativo}
 % Analisi della situazione logistica aziendale, workflow di gestione di sanet, capacita operativa del team NOC in tale contesto
-
-Il business principale dei laboratori Marconi consiste nel monitoraggio di apparati e servizi applicativi, per erogare tale servizio e non dipendere da software esterno l'azienda ha deciso di sviluppare la sua soluzione di monitoraggio proprietaria: Sanet.
+Il business principale dei laboratori Marconi consiste nel monitoraggio di apparati e servizi applicativi, per erogare tale servizio e non dipendere da software esterno l'azienda ha deciso di sviluppare la sua soluzione di monitoraggio proprietaria: \verb|sanet|.
 
 Dal punto di vista architetturale Sanet e un sistema distribuito basato su Simple network message protocol (\verb|SNMP|), composto da processi demoni di varia natura tra cui:
 
@@ -225,7 +224,7 @@ Il poller remoto e pensato come un servizio stateless che comunica con il demone
     \label{fig:enter-label}
 \end{figure}
 
-Sanet modella le entita che eseguono le condition come \verb|agenti|, ogni agente e affidato a un poller e ogni poller corrisponde a un set di processi pesanti unix e un sottoinsieme di thread python dedicati al particolare agente:
+Sanet modella le entità che eseguono le condition come \verb|agenti|, ogni agente e affidato a un poller e ogni poller corrisponde a un set di processi pesanti unix e un sottoinsieme di thread python dedicati al particolare agente:
 
 
 \begin{figure}[H]
@@ -284,7 +283,7 @@ L'area NAD fornisce sanet sotto forma di repository subversion contenenti i sorg
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.2\linewidth]{build/sanet_production_simple.png}
+    \includegraphics[width=1\linewidth]{build/sanet_production_simple.png}
     \caption{architettura sanet in produzione}
     \label{fig:enter-label}
 \end{figure}
@@ -345,8 +344,20 @@ Per garantire il servizio anche in caso di guasti fisici all'infrastruttura che 
     \label{fig:enter-label}
 \end{figure}
 
+\subsection{analisi delle problematiche insorte}
+
 % problematiche insorte
-%Con il tempo questa gestione ha portato a una frammentazione nelle scelte amministrative delle istanze di sanet e a gravi situazioni di software erosion. Ad ogni richiesta di monitoraggio dei clienti le installazioni di sanet vengono integrate con software esterni per mezzo di componenti sviluppati dai sistemisti.
+Delegare l'ingegnerizzazione delle istanze ai singoli team ha si ridotto il carico di lavoro dell'area NAD ma ha anche comportato con il tempo una situazione di frammentazione delle installazioni di sanet, le feature necessarie al monitoraggio sono implementate in maniera diversa a seconda della conoscenza a disposizione dei team di sanet e delle tecnologie utilizzabili, inoltre le informazioni.
+
+Molte delle richieste di messa a monitoraggio anche se simili sono implementate in maniera diversa tra le diverse istanze di sanet, un esempio lampante e il monitoraggio di cluster VMware che e implementato per mezzo di integrazioni di sanet diverse fra le varie installazioni dei clienti.
+
+Questo comporta un alto costo nel caso di lavori su istanze non note, un sistemista che deve eseguire operazioni di manutenzione e utilizzo di un sanet non noto può ritrovarsi incapace di agire efficacemente
+
+
+
+
+
+Con il tempo questa gestione ha portato a una frammeinoltre ntazione nelle scelte amministrative delle istanze di sanet e a gravi situazioni di software erosion. Ad ogni richiesta di monitoraggio dei clienti le installazioni di sanet vengono integrate con software esterni per mezzo di componenti sviluppati dai sistemisti.
 %
 %Queste componenti software non vengono sottoposte a versioning o documentazione estensiva e lo sviluppo non e in grado di tenerne traccia, inoltre non e previsto un controllo delle dipendenze ne una procedura di deployment.
 %
