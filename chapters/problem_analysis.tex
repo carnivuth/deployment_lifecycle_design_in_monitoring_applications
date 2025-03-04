@@ -269,8 +269,8 @@ I membri del team essi sono anche responsabili per la manutenzione e aggiornamen
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.2\linewidth]{build/update_workflow.png}
-    \caption{procedura di update}
+    \includegraphics[width=1\linewidth]{build/update_workflow.png}
+    \caption{workflow di update}
     \label{fig:enter-label}
 \end{figure}
 
@@ -346,12 +346,43 @@ Per garantire il servizio anche in caso di guasti fisici all'infrastruttura che 
 
 \subsection{analisi delle problematiche insorte}
 
-% problematiche insorte
-Delegare l'ingegnerizzazione delle istanze ai singoli team ha si ridotto il carico di lavoro dell'area NAD ma ha anche comportato con il tempo una situazione di frammentazione delle installazioni di sanet, le feature necessarie al monitoraggio sono implementate in maniera diversa a seconda della conoscenza a disposizione dei team di sanet e delle tecnologie utilizzabili, inoltre le informazioni.
+% frammentazione dell'installato
+Delegare l'ingegnerizzazione delle istanze ai singoli team ha si ridotto il carico di lavoro dell'area NAD ma ha anche comportato con il tempo una situazione di frammentazione delle installazioni di sanet, le feature necessarie al monitoraggio sono implementate in maniera diversa a seconda della conoscenza a disposizione dei team di sanet e delle tecnologie utilizzabili.
+
+% analisi delle integrazioni
+Le integrazioni sviluppate da sistemisti per aggiungere funzionalità a sanet sono riconducibili tutte alla seguente struttura:
+
+\begin{itemize}
+  \item{raccolta dati da una fonte \(X\)}
+  \item{parsing dei dati raccolti da un formato \(\alpha\) a un formato \(\beta\)}
+  \item{comunicazione con il sistema sanet}
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/sanet_integration_structure.png}
+    \caption{struttura delle integrazioni}
+    \label{fig:enter-label}
+\end{figure}
+
+Le prime due fasi sono le più problematiche, la prima comporta spesso la comunicazione con sistemi che nel caso migliore parlano protocolli open ma a versioni non più supportate come ad esempio vecchie versioni di TLS, nel peggior caso parlano protocolli proprietari instabili e a volte anche binari.
+
+Quanto detto viene esacerbato ancora di più nella seconda fase, il parsing delle informazioni raccolte e infatti strettamente dipendente dal formato dei dati recuperati che è da considerarsi instabile e soggetto a mutazioni frequenti.
+
+Per Semplificare l'implementazione i sistemisti fanno spesso uso di librerie e o programmi esterni che si occupino di risolvere la complessità della comunicazione e o del parsing, in caso di script python questi possono anche condividere il virtual environment di sanet, rendendo impossibile la manutenzione delle dipendenze del software.
+
+La fase di comunicazione con sanet risulta comunque problematica in quanto non viene definita nessuna API "ufficiale" di comunicazione con l'applicazione stessa, di conseguenza le integrazioni comunicano con sanet per mezzo di sistemi complessi e non noti come puo essere l'esecuzione di script della command line interface di sanet, modifica di file nel filesystem, manipolazione delle chiavi in redis e cosi via.
+
+Le integrazioni inoltre non sono sottoposte a procedure di versioning o code review e non è prevista nessuna procedura di deployment al di fuori degli ambienti dove vengono sviluppati, di fatto si perde la conoscenza dello stato dell'installato, rendendo estremamente difficile qualunque operazione di manutenzione necessaria all'area NAD per aggiornare il software.
+
+Il riscontro finale lo si ha nello stato dell'installato, che verte in una condizione di estrema software erosion
 
 Molte delle richieste di messa a monitoraggio anche se simili sono implementate in maniera diversa tra le diverse istanze di sanet, un esempio lampante e il monitoraggio di cluster VMware che e implementato per mezzo di integrazioni di sanet diverse fra le varie installazioni dei clienti.
 
-Questo comporta un alto costo nel caso di lavori su istanze non note, un sistemista che deve eseguire operazioni di manutenzione e utilizzo di un sanet non noto può ritrovarsi incapace di agire efficacemente
+Questo comporta un alto costo nel caso di lavori su istanze non note, un sistemista che deve eseguire operazioni di manutenzione e utilizzo di un sanet non noto può ritrovarsi incapace di agire efficacemente e in velocità
+
+% utilizzo dei template
+La funzionalità di templating fornita da sanet per quanto riguarda i monitoraggi viene utilizzata in maniera diversa nelle varie installazioni, e possibile trovare template di nodo che "ereditano" da altri template di nodo  ff
 
 
 
