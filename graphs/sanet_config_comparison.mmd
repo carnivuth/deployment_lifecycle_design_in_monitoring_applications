@@ -1,0 +1,13 @@
+classDiagram
+    note for node_template_web_server "configuration exploiting sanet inheritance"
+    note for storage_template_storage "configuration exploiting sanet composition"
+    node_template_server_linux <|-- node_template_web_server
+    node_template_server_linux *-- storage_template_storage
+    class node_template_server_linux{
+        +storage_template_storage storage
+    }
+    class storage_template_storage{
+    }
+    class node_template_web_server{
+    }
+

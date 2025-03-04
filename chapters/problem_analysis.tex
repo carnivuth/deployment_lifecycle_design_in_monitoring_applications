@@ -1,6 +1,17 @@
 \chapter{Analisi del problema di business}
 %Ampia descrizione delle problematiche operative (workflow aziendali non più manutenibili) e di sviluppo (mantenimento dell'applicativo, automazione delle operazioni di ciclo di vita del software) overview di ciò che già e stato fatto e come viene gestito il software in produzione
 
+Il progetto a previsto un ampia fase di analisi dove sono stati documentati
+
+\begin{itemize}
+  \item{i processi aziendali portati avanti dai vari membri dei team}
+  \item{i software coinvolti in tali processi sia proprietari che non}
+  \item{lo stato delle istanze di tali software in produzione}
+\end{itemize}
+
+L'obbiettivo di questa fase di analisi e stato quello di raccogliere informazioni sullo stato dell'installato in funzione delle operazioni compiute dal team NOC per soddisfare la mission aziendale, in particolare ci si e concentrati sul comprendere le motivazioni di determinate scelte progettuali in fase di messa in produzione del software di monitoraggio sanet.
+
+\newpage
 \subsection{Analisi dell'applicativo}
 % Analisi della situazione logistica aziendale, workflow di gestione di sanet, capacita operativa del team NOC in tale contesto
 Il business principale dei laboratori Marconi consiste nel monitoraggio di apparati e servizi applicativi, per erogare tale servizio e non dipendere da software esterno l'azienda ha deciso di sviluppare la sua soluzione di monitoraggio proprietaria: \verb|sanet|.
@@ -237,6 +248,7 @@ Sanet modella le entità che eseguono le condition come \verb|agenti|, ogni agen
 % sum up
 Sanet si mostra come un complesso sistema distribuito in grado di adattarsi al contesto di produzione e fornire agli amministratori della rete un buon potere espressivo nel definire le operazioni richieste per il monitoraggio
 
+\newpage
 \subsection{Analisi del contesto aziendale}
 
 % struttura area NMS
@@ -276,6 +288,18 @@ I membri del team essi sono anche responsabili per la manutenzione e aggiornamen
 
 Il team inoltre determina come l'architettura di sanet venga distribuita sull'infrastruttura del cliente, considerando le risorse che il cliente mette a disposizione per la sua infrastruttura.
 
+% workflow team NOC
+
+Il team NOC gestisce due workflow aziendali:
+
+\begin{itemize}
+  \item{incident response, intercettazione delle problematiche dell'infrastruttura del cliente e esecuzione di procedure di presa in carico e analisi del problema}
+  \item{service request, soddisfacimento di una specifica richiesta da parte del cliente}
+\end{itemize}
+
+Per entrambi questi workflow il team NOC fa affidamento a una base documentale manutenuta dai team sistemistici dove vengono scritte le procedure i referenti e le principali problematiche di un tale componente infrastrutturale del cliente
+
+\newpage
 \subsection{Analisi stato della produzione}
 
 % "artefatti" prodotti dal area NAD (stendiamo un velo pietoso....)
@@ -344,6 +368,7 @@ Per garantire il servizio anche in caso di guasti fisici all'infrastruttura che 
     \label{fig:enter-label}
 \end{figure}
 
+\newpage
 \subsection{analisi delle problematiche insorte}
 
 % frammentazione dell'installato
@@ -375,27 +400,16 @@ La fase di comunicazione con sanet risulta comunque problematica in quanto non v
 
 Le integrazioni inoltre non sono sottoposte a procedure di versioning o code review e non è prevista nessuna procedura di deployment al di fuori degli ambienti dove vengono sviluppati, di fatto si perde la conoscenza dello stato dell'installato, rendendo estremamente difficile qualunque operazione di manutenzione necessaria all'area NAD per aggiornare il software.
 
-Il riscontro finale lo si ha nello stato dell'installato, che verte in una condizione di estrema software erosion
+% problemi della messa a monitoraggio
+I team sistemistici fanno uso intensivo dei template per accelerare l'aggiunta a monitoraggio di un oggetto, tuttavia agiscono in maniera indipendente e le configurazioni di nodi simili risultano estremamente diverse, per esempio dato un server linux che fornisce un servizio web la configurazione può fare uso di template in composizione o in ereditarietà
 
-Molte delle richieste di messa a monitoraggio anche se simili sono implementate in maniera diversa tra le diverse istanze di sanet, un esempio lampante e il monitoraggio di cluster VMware che e implementato per mezzo di integrazioni di sanet diverse fra le varie installazioni dei clienti.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/sanet_config_comparison.png}
+    \caption{due diverse configurazioni ma con lo stesso obbiettivo}
+    \label{fig:enter-label}
+\end{figure}
 
-Questo comporta un alto costo nel caso di lavori su istanze non note, un sistemista che deve eseguire operazioni di manutenzione e utilizzo di un sanet non noto può ritrovarsi incapace di agire efficacemente e in velocità
+Le due possibilità di configurazione danno luogo a scenari diversi, nel caso di utilizzo dell'ereditarietà si ha si una alta capacita espressiva in fase di progettazione del monitoraggio ma una minore malleabilità nel caso di scenari non previsti, per esempio in caso di un nodo che abbia multipli server web oppure che offra funzionalità ulteriori come il servizio radius, se invece si opta per la composizione si guadagna in malleabilità ma si delega la scelta dei template di cui comporre il nodo sempre in fase di messa a monitoraggio incrementando cosi il carico di lavoro.
 
-% utilizzo dei template
-La funzionalità di templating fornita da sanet per quanto riguarda i monitoraggi viene utilizzata in maniera diversa nelle varie installazioni, e possibile trovare template di nodo che "ereditano" da altri template di nodo  ff
-
-
-
-
-
-Con il tempo questa gestione ha portato a una frammeinoltre ntazione nelle scelte amministrative delle istanze di sanet e a gravi situazioni di software erosion. Ad ogni richiesta di monitoraggio dei clienti le installazioni di sanet vengono integrate con software esterni per mezzo di componenti sviluppati dai sistemisti.
-%
-%Queste componenti software non vengono sottoposte a versioning o documentazione estensiva e lo sviluppo non e in grado di tenerne traccia, inoltre non e previsto un controllo delle dipendenze ne una procedura di deployment.
-%
-%Non e in frequente, inoltre che queste integrazioni condividano dipendenze in comune con Sanet, queste possono mostrarsi sotto la forma di librerie ma anche di istanze di servizi software come redis o postgres
-%
-%Le integrazioni si interfacciano con Sanet per mezzo di API non standard che possono spaziare da formato di file generati dal sistema a output da command line interface.
-%
-%Questo approccio porta a un problema legato alle gestione delle manutenzioni del software, aggiornamento delle dipendenze e gestione delle manutenzioni ordinarie e straordinarie, per esempio l'aggiornamento dei sorgenti di sanet non può essere apportato in maniera identica su diverse installazioni senza rischiare di rompere integrazioni.
-%
-%Operazioni ordinarie come l'aggiunta a monitoraggio la modifica di configurazioni di sistema e la gestione di richieste del cliente non può essere svolta in maniera omogenea trasversalmente nelle diverse installazioni
+Il sintomo di queste problematiche lo si ha nello stato dell'installato che verte in una condizione di estrema software erosion e frammentazione, rendendo impossibile il transito della gestione al team NOC che non è a conoscenza delle scelte progettuali effettuate e delle motivazioni che hanno portato a compiere tali scelte.
