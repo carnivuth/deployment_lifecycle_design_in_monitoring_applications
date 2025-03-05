@@ -1,6 +1,6 @@
-# Sistemi per la gestione scalabile del software lifecycle in applicativi di monitoraggio
+# Sistemi per la gestione scalabile del software life-cycle in applicativi di monitoraggio
 
-Lavoro di tesi magistrale svolto presso i Laboratori Guglielmo Marconi, dedicato alla progettazione e al management del software lifecicle del sistema di monitoraggio Sanet
+Lavoro di tesi magistrale svolto presso i Laboratori Guglielmo Marconi, dedicato alla progettazione e al management del software life-cycle del sistema di monitoraggio Sanet
 
 ## Visionare l'elaborato
 
@@ -17,7 +17,7 @@ git clone https://github.com/carnivuth/[CHANGEME]
 - installare le dipendenze di build
 
 ```bash
-pacman -S texlive-latex texlive-latexrecommended texlive-latexextra make mermaid-cli inotify-tools
+pacman -S texlive-latex texlive-latexrecommended texlive-latexextra make mermaid-cli inotify-tools evince
 ```
 
 - buildare il progetto
@@ -36,7 +36,7 @@ Nel elaborato verranno affrontate problematiche quali:
 - Progettazione delle procedure di update del software
 - Pianificazione e esecuzione delle operazioni di migrazione delle istanze di produzione
 
-L'obbiettivo del progetto che ho condotto presso i Laboratori Marconi e' stato allineare le installazioni di Sanet, a una unica architettura di produzione che fosse in grado di coprire tutte le varie esigenze di business in termini di servizi erogati. l'architettura in questione deve essere replicabile in maniera programmatica.
+L'obbiettivo del progetto che ho condotto presso i Laboratori Marconi e' stato allineare le installazioni di Sanet, a una unica architettura di produzione che fosse in grado di coprire tutte le varie esigenze di business in termini di servizi erogati. L'architettura in questione deve essere replicabile in maniera programmatica.
 
 Le sopracitate problematiche verranno esplorate con un occhio dedicato alla scalabilità e malleabilità delle operazioni e al mantenimento dei processi produttivi aziendali, con l'obbiettivo di rendere il Network operation center capace di gestire le operazioni regolari di manutenzione del software
 
