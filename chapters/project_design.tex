@@ -250,6 +250,7 @@ Problema non banale è stato quello di suddividere le istanze nei vari batches, 
 
 \newpage
 La funzione di scoring aveva inoltre come vincolo che data una installazione slave e la corrisponende master si avesse che \(batch(slave_instance) \lt batch(master_instance)\)
+
 \begin{lstlisting}[language=python]
 def compute_critical(hosts,host):
     repcoeff = 0.8 if 'rep' in host and host["rep"] else 0.2
@@ -259,7 +260,27 @@ def compute_critical(hosts,host):
     return repcoeff * rolecoeff * clustercoeff * num_nodes
 \end{lstlisting}
 
+Per poter ridurre il downtime in fase di update l'implementazione della procedura e stata pensata per essere personalizzabile in fase di esecuzione, in qunanto differenti aggiornamenti possono comportare il riavvio di componenti diversi della infrastruttura, per esempio in caso di aggiornamento alla web ui non e necessario riavviare il demone principale sanetd o aggiornare gli eventuali poller remoti
+
 % monitoraggio delle istanze centralizzato
+Le istanze di sanet aggiornate necessitano di monitoraggio per garantire il mantenimento dello stato dell'installato, per far cio si è predisposto un istanza di sanet centrale che accentrasse le informazioni di stato dell'installato, queste vengono raccolte per mezzo di un endpoint HTTP esposto dalle singole istanze di sanet
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/sanet_monitor.png}
+    \caption{struttura di monitoraggio di sanet}
+    \label{fig:enter-label}
+\end{figure}
+
+La messa a monitoraggio di una nuova istanza di sanet viene realizzata per mezzo del provisioner, il provisioner ottiene dal file di configurazione del sanet in questione le credenziali necessarie per contattare le API, ottiene lo stato attuale dell'installato e configura il monitoraggio sulla istanza centrale.
+
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=1\linewidth]{build/add_monitor_procedure.png}
+%    \caption{struttura di monitoraggio di sanet}
+%    \label{fig:enter-label}
+%\end{figure}
+
 % progettazione del provision
 
 % gestione dei segreti
