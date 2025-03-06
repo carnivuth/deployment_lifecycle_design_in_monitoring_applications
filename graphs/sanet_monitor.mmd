@@ -1,0 +1,19 @@
+---
+config:
+  layout: "classic"
+---
+flowchart LR
+subgraph labs_infrastructure
+A[sanet central instance]
+end
+subgraph client_1_infrastructure
+B[sanet instance]
+end
+subgraph client_2_infrastructure
+C[sanet instance]
+end
+subgraph client_3_infrastructure
+D[sanet instance]
+end
+
+A --request status via API --> B & C & D
