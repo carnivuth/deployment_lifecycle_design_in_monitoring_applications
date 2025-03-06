@@ -170,7 +170,6 @@ Per accelerare la fase di migrate e ridurre il conseguente downtime viene effett
 
 La procedura di migrate completa si compone delle seguenti fasi
 
-
 \begin{itemize}
   \item{esportazione delle configurazioni per mezzo di git}
   \item{pulizia dei log a database della istanza in produzione}
@@ -181,7 +180,6 @@ La procedura di migrate completa si compone delle seguenti fasi
   \item{riconfigurazione della nuova istanza per mezzo della repository git}
 \end{itemize}
 
-
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/migration.png}
@@ -190,6 +188,38 @@ La procedura di migrate completa si compone delle seguenti fasi
 \end{figure}
 
 % progettazione della procedura di update
+Una volta migrate le istanze in produzione era necessario prevedere un workflow che tenesse le istanze aggiornate, la progettazione della procedura di update ha comportato due principali problematiche, la prima di natura tecnica in quanto le installazioni di sanet risultano comunque molto diverse in termini di nodi coinvolti e loro natura, per esempio nel cliente \(\alpha\) dopo la migrazione l'infrastruttura presentava lo schema master slave visto in precedenza
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/alpha_client.png}
+    \caption{infrastruttura cliente alpha}
+    \label{fig:enter-label}
+\end{figure}
+
+In queste situazioni vi e la possibilita di testare l'update sfruttando l'installazione slave replicando uno schema di aggiornamento A/B, dove si aggiorna prima l'istanza non utilizzata per verificare l'impatto delle modifiche su un infrastruttura il piu vicino possibile a quella di produzione, tuttavia esistono anche le installazioni di classe \(\beta\)
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{build/beta_client.png}
+    \caption{infrastruttura cliente beta}
+    \label{fig:enter-label}
+\end{figure}
+
+In queste infrastrutture non e prevista un istanza di backup o l'istanza di backup non replica perfettamente l'istanza master qui lo schema di aggiornamento A/B non risulta ugualmente utile o nel peggiore dei casi non e attuabile, la terza tipologia di istanze e quella \(\gamma\)
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/gamma_client.png}
+    \caption{infrastruttura cliente gamma}
+    \label{fig:enter-label}
+\end{figure}
+
+Queste sono le infrastrutture più complesse, presentano nodi che spesso sono distribuiti in locazioni geografiche remote, macchine fisiche che presentano elementi infrastrutturali sia della installazione master che slave e logiche di failover implementate a livello del singolo elemento infrastrutturale.
+
+Un'altra importante considerazione da fare riguarda le installazioni per cui e previsto servizio di reperibilità, il loro funzionamento risulta essere più critico delle altre
+
 % progettazione del provision
 
 % gestione dei segreti

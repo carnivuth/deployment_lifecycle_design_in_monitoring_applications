@@ -1,0 +1,30 @@
+flowchart TD
+subgraph host1
+A[sanet master]
+B[poller slave]
+end
+subgraph host2
+C[sanet slave]
+D[poller master]
+end
+subgraph host3
+E[poller master]
+end
+subgraph host4
+F[poller master]
+end
+subgraph host5
+G[poller master]
+end
+subgraph host6
+H[poller slave]
+end
+subgraph host7
+I[poller slave]
+end
+subgraph host8
+J[poller slave]
+end
+A --sync database--> C
+A --> D & E & F & G
+C --> B & H & I & J
