@@ -208,7 +208,6 @@ In queste situazioni vi e la possibilita di testare l'update sfruttando l'instal
 
 In queste infrastrutture non e prevista un istanza di backup o l'istanza di backup non replica perfettamente l'istanza master qui lo schema di aggiornamento A/B non risulta ugualmente utile o nel peggiore dei casi non e attuabile, la terza tipologia di istanze e quella \(\gamma\)
 
-
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/gamma_client.png}
@@ -218,10 +217,50 @@ In queste infrastrutture non e prevista un istanza di backup o l'istanza di back
 
 Queste sono le infrastrutture più complesse, presentano nodi che spesso sono distribuiti in locazioni geografiche remote, macchine fisiche che presentano elementi infrastrutturali sia della installazione master che slave e logiche di failover implementate a livello del singolo elemento infrastrutturale.
 
-Un'altra importante considerazione da fare riguarda le installazioni per cui e previsto servizio di reperibilità, il loro funzionamento risulta essere più critico delle altre
+Un'altra importante considerazione da fare riguarda le installazioni per cui e previsto servizio di reperibilità, il loro funzionamento risulta essere più critico delle altre.
 
+Inoltre la procedura di update ha come requisito quello di generare il downtime minimo possibile in fase di aggiornamento e accomodare tutti i possibili scenari di update tra cui:
+
+\begin{itemize}
+  \item{aggiornamento alla webui di sanet}
+  \item{aggiornamento delle dipendenze di sanet}
+  \item{aggiornamento di un sorgente di sanet}
+  \item{aggiornamento delle integrazioni}
+\end{itemize}
+
+Va inoltre tenuto in considerazione che i nodi che ospitano agenti remoti devonon essere aggiornati contestualmente al nodo sanetd di riferimento in quanto l'area NAD non garantisce la compatibilità del protocollo di comunicazione tra diverse versioni del demone principale e degli agenti remoti
+
+Per affrontare il problema la procedura di update e stata suddivisa in 4 batch di aggiornamento, ogni batch contiene un sottoinsieme delle istanze di sanet e le istanze che fanno parte dello stesso batch vengono aggiornate insieme, dopo l'esecuzione di un batch le istanze che ne fanno parte sono tenute sotto osservazione in modo da identificare problemi prima di aggiornare il batch successivo
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/update_batches.png}
+    \caption{procedura di aggiornamento di sanet in batches}
+    \label{fig:enter-label}
+\end{figure}
+
+Problema non banale è stato quello di suddividere le istanze nei vari batches, per far cio e stata definita una funzione di scorig \(S\) che valutasse la criticita di un installazione in base ai seguenti parametri:
+
+\begin{itemize}
+  \item{numero di nodi monitorati dall'istanza}
+  \item{numero di nodi appartenenti al cluster di monitoraggio}
+  \item{se l'istanza e slave}
+  \item{se l'istanza fornisce servizio h24}
+\end{itemize}
+
+\newpage
+La funzione di scoring aveva inoltre come vincolo che data una installazione slave e la corrisponende master si avesse che \(batch(slave_instance) \lt batch(master_instance)\)
+\begin{lstlisting}[language=python]
+def compute_critical(hosts,host):
+    repcoeff = 0.8 if 'rep' in host and host["rep"] else 0.2
+    rolecoeff = 0.8 if 'sanet' in host["containers"] and host["containers"]["sanet"]["role"] == "prod" else 0.2
+    clustercoeff = 0.8*cluster_nodes(hosts,host)
+    num_nodes = host["containers"]["sanet"]["nodes"] if "nodes" in host["containers"]["sanet"] else 1
+    return repcoeff * rolecoeff * clustercoeff * num_nodes
+\end{lstlisting}
+
+% monitoraggio delle istanze centralizzato
 % progettazione del provision
 
 % gestione dei segreti
 %Uno dei requisiti per cui e stata scelta la tecnologia a container e rendere il team NOC capace di gestire la procedura di aggiornamento massivo delle installazioni di sanet in maniera centralizzata, il container infatti consente di uniformare la procedura di installazione e aggiornamento in maniera trasparente rispetto alle decisioni prese in area NAD.
-% monitoraggio delle istanze dal centro

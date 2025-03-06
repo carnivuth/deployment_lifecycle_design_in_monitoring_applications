@@ -1,0 +1,23 @@
+sequenceDiagram
+participant batch1
+participant batch2
+participant batch3
+participant batch4
+activate batch1
+batch1 ->> batch1: update
+deactivate batch1
+alt update ended correctly
+activate batch2
+batch2 ->> batch2: update
+deactivate batch2
+alt update ended correctly
+activate batch3
+batch3 ->> batch3: update
+deactivate batch3
+alt update ended correctly
+activate batch4
+batch4 ->> batch4: update
+deactivate batch4
+end
+end
+end
