@@ -1,0 +1,13 @@
+flowchart LR
+subgraph host
+A@{shape: disk, label: "external drive" }
+subgraph container
+B@{shape: doc, label: "postgres data"}
+C@{shape: doc, label: "sanet data"}
+D@{shape: process, label: "sanetd"}
+E@{shape: database, label: "postgres"}
+end
+end
+E -- writes on --> B -- mounted in --> A
+D -- writes on --> C -- mounted in --> A
+

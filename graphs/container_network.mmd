@@ -1,0 +1,22 @@
+flowchart TD
+subgraph host
+A{{lxcbr0}}
+B[apache reverse proxy]
+C{{eth0}}
+subgraph container
+D{{eth0}}
+E[sanetd]
+F[(redis)]
+J[(postgres)]
+G[apache]
+end
+subgraph another container
+H{{eth0}}
+I[...]
+end
+end
+
+D & H -- 169.254.254.0/24 --> A --> C
+E --> F & J
+G --> J
+B -- send requests --> G

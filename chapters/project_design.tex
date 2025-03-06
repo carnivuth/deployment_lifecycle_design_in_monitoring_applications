@@ -1,2 +1,106 @@
 \chapter{Progettazione della soluzione}
 %Progettazione della architettura di produzione del software applicativo, gestione di tutti i componenti critici per la corretta erogazione dei servizi offerti e progettazione del sistema di software management per la gestione del life-cycle, progettazione di tutte le operazioni necessarie per la migrazione alla nuova architettura
+
+Dato il contesto descritto sopra uno dei sotto obbiettivi risultava essere l'allineamento dell'infrastruttura di sanet a una sola architettura comune, che semplificasse l'installazione, e l'aggiunta di componenti a sanet, i requisiti di questa infrastruttura sono stati:
+
+\begin{itemize}
+\item{riproducibilità della stessa}
+\item{versioning dell'infrastruttura}
+\item{possibilità di gestione e monitoraggio centralizzati}
+\end{itemize}
+
+% Il problema del deployment
+Il problema principale riscontrato in fase di analisi e quello legato alla gestione del deployment da parte dei due team coinvolti NAD e NMS, nel workflow mostrato la progettazione del deployment e delegata ai team sistemistici, impedendo all'area NAD di conoscere lo stato delle istanze in produzione, inoltre l'assenza di artefatti prodotti fa si che fra la progettazione del deployment e le effettive operazioni di messa in produzione non esista un interfaccia chiara che costringa le due parti a un workflow condiviso.
+
+Risultava quindi necessario progettare un artefatto e la conseguente procedura di build che dati i sorgenti di sanet producesse un oggetto installabile, ma che allo stesso tempo lasciasse ai team sistemistici la possibilità di modificare l'ambiente di esecuzione in caso di necessità per rispondere tempestivamente alle richieste dei clienti.
+
+\newpage
+\subsection{Progettazione dell'artefatto: Il container}
+
+La necessità di pacchettizzare sia le dipendenze applicative che demoni come redis e postgres ha fatto si che il team optasse per una soluzione basata su container.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/container.png}
+    \caption{container come artefatto}
+    \label{fig:enter-label}
+\end{figure}
+
+% LXC come soluzione a container
+Per la creazione del container il team ha optato per la tecnologia LXC\cite{LXC} che offre un set di API di basso livello per la creazione di ambienti runtime isolati sfruttando le possibilità offerte dalla funzionalità namespaces del kernel linux. La tecnologia LXC non fa assunzioni sulla natura del container e consente la creazione di ambienti virtuali completi di init system dove all'interno possono risiedere processi demoni di varia natura.
+
+% struttura del container LXC
+Nel container LXC vengono predisposti tutti i moduli di sanet e viene creato il virtual environment di python necessario per l'esecuzione, vengono inoltre installati tutti i demoni necessari al funzionamento di sanet, e inoltre presente il software rancid per il backup periodico delle configurazioni degli apparati e la sua integrazione con sanet
+
+% gestione dei dati
+Sanet e rancid producono una mole di dati proporzionale al numero di datagroup monitorati di cui viene mantenuto uno storico di un anno, in un installazione medio piccola questo comporta \(\simeq 1000 GB\) di occupazione di storage, questi dati inoltre devono essere sottoposti a backup e sopravvivere a una distruzione del container, per garantirlo viene sfruttata la tecnologia bind mount offerta da LXC\cite{LXC}
+I dati prodotti da sanet e rancid vengono esportati sulla macchina host per mezzo di bind-mount.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/container_data_management.png}
+    \caption{gestione dei dati e bind mounts}
+    \label{fig:enter-label}
+\end{figure}
+
+% gestione della network
+Il container di sanet fa parte di una rete privata con indirizzamento \verb|169.254.254.x/24|, il demone apache è esposto all' esterno per mezzo di un reverse proxy HTTP che inoltra le richieste verso il container, in caso di presenza di agenti remoti, viene esposto anche redis per mezzo di un port forwarding in modo da consentire la comunicazione con macchine esterne
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/container_network.png}
+    \caption{networking nel container}
+    \label{fig:enter-label}
+\end{figure}
+
+% gestione delle integrazioni
+Una grande sfida per il progetto e stato determinare una politica con cui gestire le integrazioni, non era possibile ignorarle in fase di progettazione in quanto avrebbe comportato un grave disservizio per il cliente e la re-ingegnerizzazione di ognuna di queste avrebbe comportato un aumento non accettabile dei tempi di sviluppo del progetto, il team ha dunque optato per una riorganizzazione delle integrazioni sistemistiche più frequenti in una raccolta pre installata nel container, questa include:
+
+\begin{itemize}
+  \item{discovery automatica dei nodi da aggiungere a monitoraggio}
+  \item{backup dei dati applicativi}
+  \item{sistema di email spia per verificare il corretto funzionamento della posta}
+  \item{tools per il sincronismo di installazioni master-slave}
+  \item{monitoraggio di infrastrutture checkmk}
+  \item{monitoraggio di infrastrutture VMware}
+  \item{monitoraggio del servizio radius }
+  \item{monitoraggio del servizio ldap }
+  \item{monitoraggio del servizio samba }
+\end{itemize}
+
+Non tutte le integrazioni sono presenti all'interno del container di default di conseguenza il container e predisposto per preservare le integrazioni esistenti che vengono importate nel container per mezzo di un bind mount
+
+% gestione delle configurazioni
+Le installazioni in produzione prevedono un set di configurazioni custom degli applicativi a bordo come per esempio la configurazione di sanet stesso, del demone di posta, di rancid oppure di postgres, l'architettura a container doveva tener conto di queste configurazioni e riportarle a seguito di una migrazione, per soddisfare il requisito si è deciso di esportare le configurazioni per mezzo di repository \verb|git|
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/customer_repository.png}
+    \caption{gestione delle configurazioni per mezzo di git}
+    \label{fig:enter-label}
+\end{figure}
+
+Viene predisposta una repository per cliente per garantire la divisione di ambito e all' interno viene replicata la struttura \verb|FHS| con all'interno le configurazioni necessarie ai servizi presenti nel container per funzionare correttamente, Per le prime installazioni e inoltre prevista una repository di configurazioni di default che consenta ai servizi di partire da cui viene creata la versione specifica per il cliente in questione
+
+% perché il container bulky
+Per evitare di modificare quanto sviluppato dall'area NAD il container in questione e pensato come architettura all-in-one che pacchettizza tutti i demoni necessari al sistema, in questo modo lo sviluppo di sanet può essere organizzato in maniera indipendente a quello degli artefatti
+
+% perché non docker
+Sono state valutate anche soluzioni che prevedessero l'uso della tecnologia docker\cite{docker}, queste tuttavia limitavano molto il workflow dei team sistemistici che non avrebbero potuto modificare agilmente il container in caso di necessità.
+
+%\newpage
+%\subsection{Progettazione del provision}
+%
+%Progettare l'artefatto non e sufficiente, e necessario prevedere le procedure che portino il container in produzione, ne effetuino l'aggiornamento e il monitoraggio, cs
+%% procedura di build
+%Il container per risultare efficace necessita di una procedura di build che si occupi di tutte le operazioni necessarie per la creazione dell'artefatto, in questo modo si e in grado di garantire il funzionamento della messa in produzione del software per mezzo dell'esecuzione della procedura di build
+%
+%% progettazione del provision
+%% gestione dei segreti
+%% progettazione della procedura di build
+%% progettazione della procedura di installazione
+%% container e update
+%Uno dei requisiti per cui e stata scelta la tecnologia a container e rendere il team NOC capace di gestire la procedura di aggiornamento massivo delle installazioni di sanet in maniera centralizzata, il container infatti consente di uniformare la procedura di installazione e aggiornamento in maniera trasparente rispetto alle decisioni prese in area NAD.
+%% progettazione della procedura di update
+%% progettazione della procedura di migrazione
+%% monitoraggio delle istanze dal centro
