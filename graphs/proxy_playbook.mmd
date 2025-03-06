@@ -1,0 +1,11 @@
+---
+config:
+  layout: "classic"
+---
+flowchart TD
+A@{shape: hex, label: "deploy_labs_application playbook"}
+B[deploy sanet]
+C[deploy sanet_agent]
+D[deploy loggit]
+
+A --execute based on app_name variable--> B & C & D

@@ -8,7 +8,6 @@ Dato il contesto descritto sopra uno dei sotto obbiettivi risultava essere l'all
 \item{versioning dell'infrastruttura}
 \item{possibilità di gestione e monitoraggio centralizzati}
 \end{itemize}
-
 % Il problema del deployment
 Il problema principale riscontrato in fase di analisi e quello legato alla gestione del deployment da parte dei due team coinvolti NAD e NMS, nel workflow mostrato la progettazione del deployment e delegata ai team sistemistici, impedendo all'area NAD di conoscere lo stato delle istanze in produzione, inoltre l'assenza di artefatti prodotti fa si che fra la progettazione del deployment e le effettive operazioni di messa in produzione non esista un interfaccia chiara che costringa le due parti a un workflow condiviso.
 
@@ -48,7 +47,7 @@ Il container di sanet fa parte di una rete privata con indirizzamento \verb|169.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{build/container_network.png}
+    \includegraphics[width=0.5\linewidth]{build/container_network.png}
     \caption{networking nel container}
     \label{fig:enter-label}
 \end{figure}
@@ -88,19 +87,111 @@ Per evitare di modificare quanto sviluppato dall'area NAD il container in questi
 % perché non docker
 Sono state valutate anche soluzioni che prevedessero l'uso della tecnologia docker\cite{docker}, queste tuttavia limitavano molto il workflow dei team sistemistici che non avrebbero potuto modificare agilmente il container in caso di necessità.
 
-%\newpage
-%\subsection{Progettazione del provision}
-%
-%Progettare l'artefatto non e sufficiente, e necessario prevedere le procedure che portino il container in produzione, ne effetuino l'aggiornamento e il monitoraggio, cs
-%% procedura di build
-%Il container per risultare efficace necessita di una procedura di build che si occupi di tutte le operazioni necessarie per la creazione dell'artefatto, in questo modo si e in grado di garantire il funzionamento della messa in produzione del software per mezzo dell'esecuzione della procedura di build
-%
-%% progettazione del provision
-%% gestione dei segreti
-%% progettazione della procedura di build
-%% progettazione della procedura di installazione
-%% container e update
+\newpage
+\subsection{Progettazione del provision: Ansible}
+
+Progettare l'artefatto non e sufficiente, e necessario prevedere le procedure che portino il container in produzione, ne effettuino l'aggiornamento e gestiscano il monitoraggio delle istanze stesse, per adempiere all'obbiettivo il team ha previsto un'architettura centralizzata in cui una macchina provisioner si occupa di gestire lo stato dell'installato, questa viene amministrata dal team stesso.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/provisioner_architecture.png}
+    \caption{architettura del provisioner}
+    \label{fig:enter-label}
+\end{figure}
+
+Il provisioner e si occupa dei seguenti compiti:
+
+\begin{itemize}
+  \item{creare l'artefatto installabile}
+  \item{installare istanza di sanet su infrastruttura on premise }
+  \item{aggiornare le istanze di sanet}
+  \item{aggiungere al monitoraggio centralizzato un istanza di sanet}
+  \item{effettuare operazioni massive come riconfigurazione di componenti dell'infrastruttura applicativa}
+\end{itemize}
+
+Il team ha deciso di optare per ansible\cite{ansible} come tecnologia di riferimento per effettuare il provisioning, le procedure vengono implementate come ansible playbooks e il nodo provisioner viene implementato come ansible tower
+
+% progettazione della procedura di build
+L'artefatto viene ricreato per mezzo di un playbook che effettua la build del container partendo da uno scheletro base minimale e installando le componenti di necessarie, la build viene controllata dal provisioner e effettuata su una macchina di staging, consentendo al team di effettuare test manuali con l'obbiettivo di collaudare il funzionamento delle sue componenti e integrazioni aggiuntive, nonché testare le nuove features introdotte da un aggiornamento
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/build_procedure.png}
+    \caption{procedura di build}
+    \label{fig:enter-label}
+\end{figure}
+
+La procedura di build consente di ottenere in maniera programmatica un infrastruttura identica per ogni installazione, e rende possibile la progettazione di operazioni massive in quanto si possono fare assunzioni sull'ambiente runtime dove si va ad operare, questo risulta essere un requisito fondamentale per rendere la manutenzione delle installazioni scalabile
+
+% progettazione della procedura di installazione
+Gli artefatti prodotti dalla procedura di build devono poter essere installati in maniera programmatica, è stata dunque prevista una procedura di di installazione di una nuova istanza di sanet a partire dagli artefatti prodotti dalla procedura di build, l'installazione prevede 3 fasi principali:
+
+\begin{itemize}
+  \item{preparazione della macchina host e installazione delle componenti principali}
+  \item{ottenimento dell'artefatto}
+  \item{configurazione dell'artefatto con le configurazioni del cliente specifico}
+\end{itemize}
+
+In questa fase viene effettuata inoltre l'inizializzazione del database postgres, necessaria in quanto in fase di installazione la directory dati di postgres viene montata all'esterno del container provocandone la cancellazione dei contenuti, vengono anche inizializzati
+
+% implementazione con ansible
+Il playbook che implementa la procedura di installazione e strutturato secondo il pattern strategy, il playbook specifica le macchine in cui eseguire la procedura e richiama un role ansible comportandosi da proxy, è il role stesso che implementa le logiche operative di installazione dello specifico contianer.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/proxy_playbook.png}
+    \caption{procedura di build}
+    \label{fig:enter-label}
+\end{figure}
+
+In questo modo il playbook di installazione può essere utilizzato anche in fase di build per effettuare il deploy del container skel
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{build/build_deploy.png}
+    \caption{relazione tra build e installazione}
+    \label{fig:enter-label}
+\end{figure}
+
+% progettazione della procedura di migrazione
+Come detto in precedenza lo stato dell'installato non poteva essere ignorato in questa fase, era fondamentale prevedere una procedura di migrazione che dato uno stato dell'installato potenzialmente ignoto fino alla fase di attuazione della procedura stessa, il team ha adottato un approccio conservativo conscio dei possibili problemi tra cui
+
+\begin{itemize}
+  \item{clashing di indirizzamenti ip con quelli del container}
+  \item{clashing di nomi all'interno del filesystem}
+  \item{stato dei dischi}
+  \item{configurazioni discordanti tra il container e quanto presente in produzione}
+\end{itemize}
+
+% operazioni pre migrazione
+In particolare in questa fase era necessario reperire le configurazioni custom della istanza in questione per poter riconfigurare l'artefatto successivamente, e stato dunque previsto un playbook che si occupasse di creare la repository git e esportare le configurazioni interessanti della istanza,vengono inoltre apportate delle correzioni alle configurazioni per quei software che a seguito di aggiornamenti hanno deprecato dei parametri di configurazione, in caso non sia presente una specifica configurazione viene fornito il default previsto dal team per quel particolare pezzo di software.
+
+Per accelerare la fase di migrate e ridurre il conseguente downtime viene effettuata una pulizia  dei log salvati nel database in modo da ridurre la quantità di dati da esportare.
+
+La procedura di migrate completa si compone delle seguenti fasi
+
+
+\begin{itemize}
+  \item{esportazione delle configurazioni per mezzo di git}
+  \item{pulizia dei log a database della istanza in produzione}
+  \item{creazione di una istanza di sanet temporanea a bordo della infrastruttura del cliente}
+  \item{arresto della vecchia istanza di sanet}
+  \item{dump del database}
+  \item{restore del database nella nuova infrastruttura a container}
+  \item{riconfigurazione della nuova istanza per mezzo della repository git}
+\end{itemize}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{build/migration.png}
+    \caption{procedura di migrazione}
+    \label{fig:enter-label}
+\end{figure}
+
+% progettazione della procedura di update
+% progettazione del provision
+
+% gestione dei segreti
 %Uno dei requisiti per cui e stata scelta la tecnologia a container e rendere il team NOC capace di gestire la procedura di aggiornamento massivo delle installazioni di sanet in maniera centralizzata, il container infatti consente di uniformare la procedura di installazione e aggiornamento in maniera trasparente rispetto alle decisioni prese in area NAD.
-%% progettazione della procedura di update
-%% progettazione della procedura di migrazione
-%% monitoraggio delle istanze dal centro
+% monitoraggio delle istanze dal centro

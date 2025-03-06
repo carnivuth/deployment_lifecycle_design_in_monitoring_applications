@@ -1,0 +1,18 @@
+---
+config:
+  layout: "classic"
+---
+flowchart LR
+A[provisioner]
+subgraph staging_infrastructure
+direction TB
+B[install skel container]
+C[create venv]
+D[install sanet components]
+E[install sanet integrations]
+F[generate artifacts]
+G[create testing environment]
+end
+
+A --controls --> staging_infrastructure
+B --> C --> D --> E --> F & G

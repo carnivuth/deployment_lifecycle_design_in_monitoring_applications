@@ -1,6 +1,22 @@
-flowchart LR
-subgraph git_repository
-A@{shape: rect, label: "sanet configurations" }
-B@{shape: rect, label: "sanet agent configurations" }
+---
+config:
+  layout: "classic"
+---
+flowchart TD
+subgraph git_server
+A@{shape: rect, label: "customer 1 configs" }
+B@{shape: rect, label: "customer 2 configs" }
+C@{shape: rect, label: "customer 3 configs" }
 end
-
+subgraph client_1_infrastructure
+D@{shape: rect, label: "customer 1 configs" }
+end
+subgraph client_2_infrastructure
+E@{shape: rect, label: "customer 2 configs" }
+end
+subgraph client_3_infrastructure
+F@{shape: rect, label: "customer 3 configs" }
+end
+A -- cloned in --> D
+B -- cloned in --> E
+C -- cloned in --> F

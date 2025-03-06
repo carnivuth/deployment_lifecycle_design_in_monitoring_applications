@@ -1,0 +1,19 @@
+---
+config:
+  layout: "classic"
+---
+flowchart TD
+subgraph labs_infrastructure
+A[provisioner]
+end
+subgraph client_1_infrastructure
+B[sanet_instance]
+end
+subgraph client_2_infrastructure
+C[sanet_instance]
+end
+subgraph client_3_infrastructure
+D[sanet_instance]
+end
+
+A --manages application state--> B & C & D

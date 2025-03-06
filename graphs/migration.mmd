@@ -1,0 +1,15 @@
+sequenceDiagram
+participant provisioner
+participant new_sanet
+participant old_sanet
+activate old_sanet
+provisioner ->> old_sanet: export config
+provisioner ->> old_sanet: clean logs
+provisioner ->> new_sanet: deploy container
+activate new_sanet
+provisioner ->> old_sanet: turn off sanetd
+deactivate old_sanet
+provisioner ->> old_sanet: dump database
+provisioner ->> new_sanet: restore database
+provisioner ->> new_sanet: reconfigure
+deactivate new_sanet
