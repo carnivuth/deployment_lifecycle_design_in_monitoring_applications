@@ -12,7 +12,7 @@ graphs: $(patsubst graphs/%.mmd,$(BUILDDIR)/%.png,$(wildcard graphs/*.mmd))
 # target for main pdf files
 main.pdf:  main.tex
 	mkdir -p $(BUILDDIR)
-	latexmk -pdf -outdir=$(BUILDDIR) $<
+	latexmk -interaction=nonstopmode -shell-escape -pdf -outdir=$(BUILDDIR) $<
 
 clean:
 	rm -rf $(BUILDDIR)
