@@ -1,6 +1,6 @@
 # Sistemi per la gestione scalabile del software life-cycle in applicativi di monitoraggio
 
-Lavoro di tesi magistrale svolto presso i Laboratori Guglielmo Marconi, dedicato alla progettazione e al management del software life-cycle del sistema di monitoraggio Sanet
+Lavoro di tesi magistrale svolto presso i [Laboratori Guglielmo Marconi](https://www.labs.it/), dedicato alla progettazione e al management del software life-cycle del sistema di monitoraggio [Sanet](https://sanet.labs.it/homepage/)
 
 ## Visionare l'elaborato
 
@@ -11,7 +11,7 @@ L'ultima versione dell'elaborato e disponibile nelle [releases](https://github.c
 - clonare la repository
 
 ```bash
-git clone https://github.com/carnivuth/[CHANGEME]
+git clone https://github.com/carnivuth/deployment_lifecycle_design_in_monitoring_applications
 ```
 
 - installare le dipendenze di build
@@ -28,7 +28,7 @@ make build
 
 ## Sommario
 
-Lo sviluppo software per risultare efficace necessita di una adeguata strategia di manutenzione e monitoraggio delle istanze in produzione per prevenire situazioni di software erosion. Il mio elaborato di tesi punta a mostrare quanto e stato svolto presso i Laboratori Marconi per quanto riguarda il software lifecycle del sistema di monitoraggio aziendale: Sanet.
+Lo sviluppo software per risultare efficace necessita di una adeguata strategia di manutenzione e monitoraggio delle istanze in produzione per prevenire situazioni di software erosion. Il mio elaborato di tesi punta a mostrare quanto e stato svolto presso i Laboratori Marconi per quanto riguarda il software life-cycle del sistema di monitoraggio aziendale: Sanet.
 
 Nel elaborato verranno affrontate problematiche quali:
 
