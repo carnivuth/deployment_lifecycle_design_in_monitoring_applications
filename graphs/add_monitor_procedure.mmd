@@ -1,0 +1,9 @@
+sequenceDiagram
+participant sanet_instance
+participant watch_tower
+watch_tower ->> sanet_instance: Get sanet configuration
+watch_tower ->> sanet_instance: Get number of pollers
+watch_tower ->> watch_tower: add datagroup template to client tenant
+watch_tower ->> watch_tower: check presence sanet_instance node in watch_tower
+watch_tower ->> watch_tower: add datagroup to sanet_instance
+watch_tower ->> watch_tower: run script to add pollers monitoring to cli

@@ -1,0 +1,25 @@
+---
+config:
+  layout: "classic"
+---
+flowchart TD
+subgraph labs_infrastructure
+A[(provisioner)]
+end
+subgraph client_1_infrastructure
+B[sanet instance]
+end
+subgraph client_2_infrastructure
+C[sanet instance]
+end
+subgraph client_3_infrastructure
+D[sanet instance]
+end
+E@{ shape: das, label: "vpn tunnel" }
+F@{ shape: das, label: "vpn tunnel" }
+G@{ shape: das, label: "vpn tunnel" }
+
+A --> E & F & G
+E --> B
+F --> C
+G --> D
