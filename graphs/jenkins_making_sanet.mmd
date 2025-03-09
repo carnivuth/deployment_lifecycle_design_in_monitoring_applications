@@ -1,0 +1,23 @@
+flowchart TD
+A[NAD team]
+B[(sanet codebase)]
+subgraph ci_cd_infrastructure
+C[jenkins instance]
+E[build environment]
+F[test environment]
+end
+D[devops team]
+G[artifact repository]
+subgraph client_1_infrastructure
+H[sanet instance]
+end
+subgraph client_2_infrastructure
+I[sanet instance]
+end
+
+A --push updates--> B -- trigger builds --> C
+C -- builds on --> E
+C -- run test on --> F
+D -- manages --> C & E & F
+C -- push artifact to --> G
+C -- updates --> H & I

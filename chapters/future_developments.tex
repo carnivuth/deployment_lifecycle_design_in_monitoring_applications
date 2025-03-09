@@ -1,7 +1,7 @@
 \chapter{sviluppi futuri}
 %Possibili sviluppi futuri sia in ambito architetturale sia per quanto riguarda il sistema di mantenimento dell'installato
 
-Il progetto si trova ora nella sua fase finale, restano tuttavia molteplici possibilità per estendere quanto fatto con l'obbiettivo di ridurre il carico di lavoro richiesto ai rispettivi team dai vari workflow e semplificare il software management degli applicativi dei laboratori marconi.
+Il progetto si trova ora nella sua fase finale, restano tuttavia molteplici possibilità per estendere quanto fatto con l'obbiettivo di ridurre il carico di lavoro richiesto ai rispettivi team dai vari workflow e semplificare il software management degli applicativi dei laboratori Marconi.
 
 \begin{itemize}
   \item{estendere la gestione del container agli altri applicativi}
@@ -12,26 +12,27 @@ Il progetto si trova ora nella sua fase finale, restano tuttavia molteplici poss
 \end{itemize}
 
 % estensione della soluzione agli altri applicativi labs
-Quanto fatto per sanet è stato pensato e per poter essere esteso agli altri applicativi labs, all'attivo l'area sviluppo fornisce e mantiene i seguenti software:
+Quanto fatto per sanet è stato pensato per poter essere esteso agli altri applicativi labs, all'attivo l'area sviluppo mantiene i seguenti software:
 
 \begin{itemize}
   \item{sanet: monitoraggio e allarmistica}
   \item{loggit: accentratore di log}
   \item{logan: analisi di log e allarmistica}
-  \item{dhcp-manager: gestione del servizio DHCP}
-  \item{datareport: datalake per l'accentramento dei dati raccolti dai vari applicativi labs}
+  \item{DHCP-manager: gestione del servizio DHCP}
+  \item{datareport: sistema data-lake per l'accentramento dei dati raccolti dai vari applicativi labs}
 \end{itemize}
 
 Queste applicazioni mostrano architetture simili o semplificate rispetto a quella di sanet e soffrono delle stesse problematiche, pertanto le procedure e ingegnerizzazioni viste sopra possono essere estese anche a questi software per omogeneizzare la messa in produzione e fornire una interfaccia comune fra sviluppo e produzione.
 
+\subsection{Docker come soluzione per la produzione dell'artefatto}
 % docker come soluzione per container
-Come accennato in precedenza docker\cite{docker} è stato preso in considerazione in una fase iniziale dello sviluppo ma subito scartato in quanto risultava di primaria importanza mantenere la capacità operativa dei team sistemistici all'interno delle infrastrutture in produzione, tuttavia questo limita fortemente le procedure centralizzate in quanto le operazioni apportate a singole installazioni di sanet fanno si che lo stato dell'installato risulti ignoto, inoltre non è possibile riportare una feature sviluppata per mezzo di un integrazione di sanet alle altre istanze ne tantomeno effettuare unit o integration testing.
+Come accennato in precedenza docker\cite{docker} è stato preso in considerazione in una fase iniziale dello sviluppo ma subito scartato in quanto risultava di primaria importanza mantenere la capacità operativa dei team sistemistici all'interno delle infrastrutture in produzione, tuttavia questo limita fortemente le procedure centralizzate in quanto le operazioni apportate a singole installazioni di sanet fanno si che lo stato dell'installato risulti ignoto, inoltre non è possibile riportare una feature sviluppata per mezzo di un integrazione di sanet alle altre istanze ne effettuare unit o integration testing.
 
-Docker d'altro canto consentirebbe di ridurre la dimensione della codebase delle procedure di deployment e update, evitando al team devops la gestione di esigenze specifiche delle singole applicazioni, per esempio nel caso di sanet successivamente a un aggiornamento puo risultare necessario effettuare delle migrazioni sul database \verb|SQL|, queste attualmente vengono gestite dalla procedura di update, tuttavia questo rende la procedura di update specifica per il software sanet e costringe allo sviluppo di una procedura diversa per ogni software, aumentando gli oneri del team devops in fase di manutezione e aggiornamento della condebase.
+Docker d'altro canto consentirebbe di ridurre la dimensione della codebase delle procedure di deployment e update, evitando al team devops la gestione di esigenze specifiche delle singole applicazioni, per esempio nel caso di sanet successivamente a un aggiornamento può risultare necessario effettuare delle migrazioni sul database \verb|SQL|, queste attualmente vengono gestite dalla procedura di update, tuttavia questo rende la procedura di update specifica per il software sanet e costringe allo sviluppo di una procedura diversa per ogni software, aumentando gli oneri del team devops in fase di manutenzione e aggiornamento della codebase.
 
-Un altro vantaggio di docker\cite{docker} sulla tecnologia LXC\cite{lxc} e quello di fornire all'area NAD una architettura identica a quella di produzione e velocizzare operazioni di integration testing sui sitemi stessi.
+Un altro vantaggio di docker\cite{docker} sulla tecnologia LXC\cite{lxc} e quello di fornire all'area NAD una architettura identica a quella di produzione e velocizzare operazioni di integration testing sui sistemi stessi.
 
-per mostrare le potenzialità offerte da docker è stato creata una demo di un container bulky dell'agente di sanet, in questa versione il container e spoglio delle integrazioni sistemistiche
+Per mostrare le potenzialità offerte da docker è stato creata una demo di un container bulky dell'agente di sanet, in questa versione il container e spoglio delle integrazioni sistemistiche
 
 \begin{lstlisting}[language=Docker]
 # Base image
@@ -70,7 +71,31 @@ COPY entrypoint.sh .
 CMD ["bash","./entrypoint.sh"]
 \end{lstlisting}
 
-Docker consente inoltre di differenziare in maniera dinamica le build del container, consentendo una gestione semplificata delle personalizzazioni specifiche per un singolo cliente
+Docker consente inoltre di differenziare in maniera dinamica le build del container, consentendo una gestione semplificata delle personalizzazioni specifiche per un singolo cliente generandole da un immagine base di sanet:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{build/docker_custom_images.png}
+    \caption{gestione di immagini custom di sanet sfruttando docker}
+    \label{fig:docker_custom_images}
+\end{figure}
+
+
 % automazione della procedura di build
+Un forte limite delle procedure sviluppate risiede nel fatto che esse richiedono intervento umano, dopo una modifica il team NAD notifica il team devops della necessita di aggiornamento per mezzo del sistema di ticketing e il team devops prende in carico la richiesta, rigenera gli artefatti e aggiorna l'infrastruttura in produzione.
+Questa procedura può essere automatizzata per mezzo di software per l'esecuzione di build distribuite come jenkins\cite{jenkins} e semaphore, questi sistemi si basano su una modellazione della procedura di build e offrono procedure dichiarative per descrivere lo stato dell'artefatto che si vuole ottenere per mezzo della procedura di build stessa.
+
 % testing su istanze distribuite
+Questi sistemi sono anche in grado di effettuare integration testing dell'artefatto prodotto in autonomia
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{build/jenkins_making_sanet.png}
+    \caption{Processo di creazione di sanet per mezzo di Jenkins}
+    \label{fig:jenkins_making_sanet}
+\end{figure}
+
 % generazione di testing scenarios sfruttando IA per evitare casi di regression
+L'utilizzo di infrastruttura per il build e il testing di sanet apre la strada a scenari dove e possibile utilizzare sistemi di intelligenza artificiale per la generazione di test scenario, l'obbiettivo di tale strategia e quello di prevenire la problematica detta software regression, dove un bug precedentemente scovato e risolto si ripresenta a seguito di un aggiornamento successivo.
+
+Il sistema sfrutterebbe la base documentale di ticket aperti all'area NAD nel corso degli anni per generare test cases nella forma di jenkins pipelines, questi verrebbero poi validati dal team devops e inseriti nella procedura di testing post build di sanet.
