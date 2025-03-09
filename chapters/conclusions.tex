@@ -1,2 +1,11 @@
 \chapter{Conclusioni}
-%Considerazioni sulle performance, obbiettivi conseguiti,
+%Considerazioni sulle performance, obbiettivi conseguiti, sum up generale
+
+La gestione del software life-cycle è un tema che un azienda non può trascurare nello sviluppo software industriale dato che le problematiche generate da una cattiva gestione del software possono portare a situazioni di scarsa sicurezza, perdita di conoscenza dello stato della produzione e rallentamenti continui nelle fasi di sviluppo e update del software, uno dei motivi per cui questo aspetto dello sviluppo viene sempre trascurato risiede negli alti costi di gestione in termini di ore uomo delle procedure di build,test e deploy che per quanto fondamentali vengono viste come una esigenza marginale su cui non investire risorse.
+
+La chiave per affrontare questo problema risulta essere l'automazione delle suddette procedure, il team non deve investire tempo nella creazione di artefatti o nel aggiornare la produzione, ma nel progettare come automatizzare queste procedure seguendo una politica d.r.y. (don't repeat yourself)
+
+Con l'introduzione dell'automazione in  questi processi, soprattutto per quanto riguarda l'aggiornamento della produzione acquisisce ancora più importanza la progettazione del testing, non solo per quanto riguarda la correttezza della codebase ma anche per il corretto funzionamento delle integrazioni a runtime, simulare ambienti distribuiti e stress test di carico diventa un problema altrettanto imponente in quanto non si e più fautori della messa in produzione ma la si delega a sistemi automatici.
+
+In questo contesto la conoscenza dello stato delle istanze in produzione attraverso il monitoraggio e la rimozione di eventuali workflow che modifichino lo stato della produzione a runtime risulta fondamentale per garantire che il testing fornisca risultati chiari e certi.
+
