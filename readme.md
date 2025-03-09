@@ -26,11 +26,9 @@ pacman -S texlive-latex texlive-latexrecommended texlive-latexextra make mermaid
 make build
 ```
 
-## Sommario
+## Abstract
 
-Lo sviluppo software per risultare efficace necessita di una adeguata strategia di manutenzione e monitoraggio delle istanze in produzione per prevenire situazioni di software erosion. Il mio elaborato di tesi punta a mostrare quanto e stato svolto presso i Laboratori Marconi per quanto riguarda il software life-cycle del sistema di monitoraggio aziendale: Sanet.
-
-Nel elaborato verranno affrontate problematiche quali:
+La tesi e stata svota nell'ambito del progetto di revisione del sistema di monitoraggio sanet presso i laboratori Marconi, e tocca temi quali progettazione di artefatti, gestione del deployment di sistemi distribuiti, miglioramento dei processi di produzione del software testing, in particolare
 
 - Riorganizzazione dell'architettura di produzione del software
 - Progettazione delle procedure di update del software
