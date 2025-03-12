@@ -13,7 +13,7 @@ L'obbiettivo di questa fase di analisi e stato quello di raccogliere informazion
 
 \newpage
 \subsection{Analisi dell'applicativo}
-% Analisi della situazione logistica aziendale, workflow di gestione di sanet, capacita operativa del team NOC in tale contesto
+% Analisi del sistema di monitoraggio aziendale, con particolare riguardo agli aspetti interessanti per il deployment
 Il business principale dei laboratori Marconi consiste nel monitoraggio di apparati e servizi applicativi, per erogare tale servizio e non dipendere da software esterno l'azienda ha deciso di sviluppare la sua soluzione di monitoraggio proprietaria: \verb|sanet|.
 
 Dal punto di vista architetturale Sanet e un sistema distribuito basato su Simple network message protocol (\verb|SNMP|), composto da processi demoni di varia natura tra cui:
@@ -72,12 +72,13 @@ Il linguaggio di configurazione consente di specificare regole di dipendenza tra
 \end{figure}
 
 % tipologie di oggetti monitorabili
-Sanet suddivide gli oggetti da sottoporre al monitoraggio in macro categorie note nel contesto del monitoraggio di apparati di rete, viene definita la seguente classificazione:
+Sanet suddivide gli oggetti da sottoporre al monitoraggio in macro categorie note nel contesto del monitoraggio di apparati di rete,il generico elemento monitorabile viene modellato per mezzo del concetto di \verb|node| che rappresenta un generico asset IT, il monitoraggio di un \verb|node| viene specializzato per mezzo della seguente classificazione:
 
 \begin{itemize}
   \item storage: supporti di memoria di vario genere sia fisici che virtuali
   \item service: servizi di qualunque entità, generalmente processi demoni
   \item interface: Interfacce di rete del nodo monitorato
+  \item device: sensori ed entità affini
 \end{itemize}
 
 Per questi oggetti vengono previsti datasource e condition di default come lo stato dello storage o il traffico sulle interfacce.
@@ -125,7 +126,7 @@ Durante l'esecuzione della condition il poller recupera i valori di tutti i data
 \end{figure}
 
 % linguaggio di configurazione
-I nodi da monitorare e i rispettivi \verb|datagroup,storage,service,interface| vengono definiti per mezzo di un apposito linguaggio di configurazione, un esempio e il seguente
+I nodi da monitorare e i rispettivi \verb|datagroup,storage,service,interface,device| vengono definiti per mezzo di un apposito linguaggio di configurazione, un esempio e il seguente
 
 \begin{lstlisting}
 node my.important.server
@@ -147,7 +148,6 @@ exit
 Per poter distinguere particolari istanze di interfacce e storage si fa uso del parametro \verb|distinguisher| che viene utilizzato in fase di scansione della tabella SNMP che contiene informazioni sulle interfacce e sugli storage per identificare i dati interessati.
 
 Il linguaggio di configurazione dei nodi consente inoltre di definire porzioni di configurazione cosiddetti \verb|templates| che consentono di raggruppare datagroup comuni per il monitoraggio di nodi in un unica configurazione e applicare una forma di ereditarietà, per esempio se si vogliono monitorare 10 macchine linux un possibile template e il seguente:
-
 
 \begin{lstlisting}
 node-template server-linux
@@ -183,13 +183,14 @@ exit
 \end{lstlisting}
 
 Dove si definisce il monitoraggio dei servizi base di una macchina linux insieme alle componenti essenziali per le statistiche
-I template possono contenere \verb|datagroups,condition,storages,interfaces,services|,essi sono a loro volta classificati in base alla risorsa di cui sono template:
+I template possono contenere \verb|datagroups,condition,storages,interfaces,services,devices|,essi sono a loro volta classificati in base alla risorsa di cui sono template:
 
 \begin{itemize}
   \item \verb|node-templates| templates da applicare al nodo monitorato, possono contenere tutti gli altri template
   \item \verb|service-templates| templates per singolo servizio applicativo
   \item \verb|storage-templates| templates per lo storage
   \item \verb|interface-templates| templates per le interfacce
+  \item \verb|device-templates| templates per il monitoraggio di sensori generici
   \item \verb|datagroup-templates| templates per singolo datagroup, possono essere contenuti in tutti gli altri template e sono i maggiormente utilizzati
 \end{itemize}
 
@@ -213,9 +214,9 @@ exit
 
 In ottica di estensibilità il linguaggio consente anche l'esecuzione di binari e script custom, per il monitoraggio di funzionalità non previste dalle funzioni builtin del linguaggio.
 
-% tech stack di sviluppo TODO
+% tech stack di sviluppo
 Dal punto di vista di sviluppo sanet e formato da un insieme di moduli python che fanno uso estensivo del framework django per la gestione della webui e della persistenza a database,
-
+c
 % agenti remoti
 Per monitorare i nodi di una data rete e necessario che i processi di sanet possano raggiungere gli apparati interessati, questo in produzione none sempre possibile per una serie di motivi quali partizionamento della rete per suddivisione dei compiti, regole firewall che non consentono il traffico dalla macchina di monitoraggio, inoltre in alcune installazioni geograficamente estese il monitoraggio risulta inefficiente in quanto le distanze rendono le misure di RTT esagerate e i timeout troppo stringenti, per affrontare il problema sanet offre la possibilità di utilizzare un poller remoto
 
