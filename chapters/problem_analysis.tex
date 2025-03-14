@@ -1,33 +1,33 @@
 \chapter{Analisi del problema di business}
 %Ampia descrizione delle problematiche operative (workflow aziendali non più manutenibili) e di sviluppo (mantenimento dell'applicativo, automazione delle operazioni di ciclo di vita del software) overview di ciò che già e stato fatto e come viene gestito il software in produzione
 
-Il progetto a previsto un ampia fase di analisi dove sono stati documentati
+Il progetto ha previsto un'ampia fase di analisi dove sono stati documentati
 
 \begin{itemize}
-  \item{i processi aziendali portati avanti dai vari membri dei team}
-  \item{i software coinvolti in tali processi sia proprietari che non}
-  \item{lo stato delle istanze di tali software in produzione}
+  \item{I processi aziendali portati avanti dai vari membri dei team}
+  \item{I software coinvolti in tali processi sia proprietari che non}
+  \item{Lo stato delle istanze di tali software in produzione}
 \end{itemize}
 
-L'obbiettivo di questa fase di analisi e stato quello di raccogliere informazioni sullo stato dell'installato in funzione delle operazioni compiute dal team NOC per soddisfare la mission aziendale, in particolare ci si e concentrati sul comprendere le motivazioni di determinate scelte progettuali in fase di messa in produzione del software di monitoraggio sanet.
+L'obbiettivo di questa fase di analisi è stato quello di raccogliere informazioni sullo stato dell'installato in funzione delle operazioni compiute dal team NOC per soddisfare la mission aziendale, in particolare ci si è concentrati sul comprendere le motivazioni di determinate scelte progettuali in fase di messa in produzione del software di monitoraggio sanet.
 
 \newpage
 \subsection{Analisi dell'applicativo}
 % Analisi del sistema di monitoraggio aziendale, con particolare riguardo agli aspetti interessanti per il deployment
 Il business principale dei laboratori Marconi consiste nel monitoraggio di apparati e servizi applicativi, per erogare tale servizio e non dipendere da software esterno l'azienda ha deciso di sviluppare la sua soluzione di monitoraggio proprietaria: \verb|sanet|.
 
-Dal punto di vista architetturale Sanet e un sistema distribuito basato su Simple network message protocol (\verb|SNMP|), composto da processi demoni di varia natura tra cui:
+Dal punto di vista architetturale Sanet è un sistema distribuito basato su simple network message protocol (\verb|SNMP|), composto da processi demoni di varia natura tra cui:
 
 \begin{itemize}
-    \item demoni per lo storage dei dati
-    \item demoni per il recupero dei dati stessi
-    \item demoni per la gestione delle notifiche
+  \item{Demoni per lo storage dei dati}
+  \item{Demoni per il recupero dei dati stessi}
+  \item{Demoni per la gestione delle notifiche}
 \end{itemize}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/sanet_architecture.png}
-    \caption{architettura di sanet}
+    \caption{Architettura di sanet}
     \label{fig:enter-label}
 \end{figure}
 
@@ -35,14 +35,14 @@ Dal punto di vista architetturale Sanet e un sistema distribuito basato su Simpl
 L'architettura si compone di un demone principale sanetd che svolge i seguenti compiti:
 
 \begin{itemize}
-  \item gestione del flusso dati in ingresso e della ripartizione e scheduling dei task da eseguire per effettuare il monitoraggio
-  \item salvataggio di log applicativi e stato dei controlli su storage stabile
-  \item gestione delle timelines generate dai task di monitoraggio
-  \item gestione del flusso in ingresso per il demone di gestione delle notifiche
+  \item{Gestione del flusso dati in ingresso e della ripartizione e scheduling dei task da eseguire per effettuare il monitoraggio}
+  \item{Salvataggio di log applicativi e stato dei controlli su storage stabile}
+  \item{Gestione delle timelines generate dai task di monitoraggio}
+  \item{Gestione del flusso in ingresso per il demone di notifica}
 \end{itemize}
 
 % datagroups
-I task generati dal demone principale vengono denominati \verb|datagroups|, un datagroup e la composizione di tre elementi principali:
+I task generati dal demone principale vengono denominati \verb|datagroups|, un datagroup è la composizione di tre elementi principali:
 
 \begin{itemize}
   \item \verb|datasource| sorgente dei dati, specifica le modalità con cui i dati devono essere reperiti, per esempio possono essere specificate OID SNMP, files, risorse web
@@ -56,18 +56,18 @@ Le condition di un datagroup possono assumere 4 stati diversi:
 \begin{figure}[H]
     \centering
     \includegraphics[height=0.6\linewidth]{build/condition_status.png}
-    \caption{stati di una condition}
+    \caption{Stati di una condition}
     \label{fig:enter-label}
 \end{figure}
 
 La transizione da uno stato all'altro avviene subito dopo l'esecuzione di una condition da parte di un poller, in particolare nel momento in cui l'espressione booleana della condition risulta falsa essa effettua una transizione nello stato \verb|failing|, al raggiungimento di un numero di tentativi falliti configurabile il controllo passa in stato \verb|down|, se il poller non riesce a valutare la condizione per esempio per irraggiungibilità del nodo o per fallimento di servizi necessari la condition transita in stato \verb|uncheckable|.
 
-Il linguaggio di configurazione consente di specificare regole di dipendenza tra vari check per mezzo del parametro \verb|dependson|, una data condition che e in \verb|dependson| di un altra non viene verificata se le condition da cui dipende non si trovano in stato \verb|UP|, in caso questo non sia verificato la condition passa in stato \verb|uncheckable|
+Il linguaggio di configurazione consente di specificare regole di dipendenza tra vari check per mezzo del parametro \verb|dependson|, una data condition che è in \verb|dependson| di un altra non viene verificata se le condition da cui dipende non si trovano in stato \verb|up|, in caso questo non sia verificato la condition passa in stato \verb|uncheckable|
 
 \begin{figure}[H]
     \centering
     \includegraphics[height=0.6\linewidth]{build/dependson_management.png}
-    \caption{gestione di condition in dependson}
+    \caption{Gestione di condition in dependson}
     \label{fig:enter-label}
 \end{figure}
 
@@ -88,7 +88,7 @@ Nel momento in cui una condition transita nello stato \verb|down| viene generato
 
 \begin{itemize}
   \item tabella di mangle: utilizzata per arricchire l'allarme di metadati per il processing da parte di sistemi esterni
-  \item tabella di filter: questa tabella e quella dove il pacchetto viene instradato al corretto destinatario
+  \item tabella di filter: questa tabella è quella dove il pacchetto viene instradato al corretto destinatario
 \end{itemize}
 
 Le tabelle sono composte da catene di regole, nel momento in cui un allarme viene processato da \verb|entables| questo scorre tutte le catene definite e se una data regola nella catena fa match con gli attributi dell'allarme vengono applicate le azioni di quella determinata regola e si procede alla regola successiva
@@ -96,7 +96,7 @@ Le tabelle sono composte da catene di regole, nel momento in cui un allarme vien
 \begin{figure}[H]
     \centering
     \includegraphics[height=0.6\linewidth]{build/entables_processing.png}
-    \caption{funzionamento di entables}
+    \caption{Funzionamento di entables}
     \label{fig:enter-label}
 \end{figure}
 
@@ -109,12 +109,12 @@ Gli allarmi raccolti dalle varie istanze vengono presentati ai membri del team N
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\linewidth]{build/sanet_nocview_comunication.png}
-    \caption{interazione sanet nocview}
+    \caption{Interazione sanet nocview}
     \label{fig:enter-label}
 \end{figure}
 
 % scheduling delle conditions
-Le condition vengono verificate dal sistema applicando uno schema a polling, il demone centrale inserisce nella coda le condition che devono essere verificate e i processi poller consumano le condition in coda e inseriscono i risultati che vengono raccolti dal processo centrale che aggiorna lo stato interno delle conditions.Le code vengono implementate per mezzo del key value store redis
+Le condition vengono verificate dal sistema applicando uno schema a polling, il demone centrale inserisce nella coda le condition che devono essere verificate e i processi poller consumano le condition in coda e inseriscono i risultati che vengono raccolti dal processo centrale che aggiorna lo stato interno delle conditions. Le code vengono implementate per mezzo del key value store redis
 
 Durante l'esecuzione della condition il poller recupera i valori di tutti i datasource coinvolti nella condition stessa, esegue l'espressione booleana della condition, aggiorna i \verb|timegraph| con i rispettivi valori e restituisce tutto al demone centrale per mezzo delle code di redis. In caso il controllo preveda l'invio di un pacchetto ICMP per verificare la connettività viene coinvolto i demone \verb|pingerd| che si occupa di effettuare le comunicazioni di rete
 
@@ -126,7 +126,7 @@ Durante l'esecuzione della condition il poller recupera i valori di tutti i data
 \end{figure}
 
 % linguaggio di configurazione
-I nodi da monitorare e i rispettivi \verb|datagroup,storage,service,interface,device| vengono definiti per mezzo di un apposito linguaggio di configurazione, un esempio e il seguente
+I nodi da monitorare e i rispettivi \verb|datagroup,storage,service,interface,device| vengono definiti per mezzo di un apposito linguaggio di configurazione, un esempio è il seguente
 
 \begin{lstlisting}
 node my.important.server
@@ -147,7 +147,7 @@ exit
 
 Per poter distinguere particolari istanze di interfacce e storage si fa uso del parametro \verb|distinguisher| che viene utilizzato in fase di scansione della tabella SNMP che contiene informazioni sulle interfacce e sugli storage per identificare i dati interessati.
 
-Il linguaggio di configurazione dei nodi consente inoltre di definire porzioni di configurazione cosiddetti \verb|templates| che consentono di raggruppare datagroup comuni per il monitoraggio di nodi in un unica configurazione e applicare una forma di ereditarietà, per esempio se si vogliono monitorare 10 macchine linux un possibile template e il seguente:
+Il linguaggio di configurazione dei nodi consente inoltre di definire porzioni di configurazione cosiddetti \verb|templates| che consentono di raggruppare datagroup comuni per il monitoraggio di nodi in un unica configurazione e applicare una forma di ereditarietà, per esempio se si vogliono monitorare 10 macchine linux un possibile template può essere il seguente:
 
 \begin{lstlisting}
 node-template server-linux
@@ -199,7 +199,7 @@ I template più comuni come quello di cui sopra vengono mantenuti in una raccolt
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/sanet_library.png}
-    \caption{sanet library}
+    \caption{Sanet library}
     \label{fig:enter-label}
 \end{figure}
 
@@ -215,45 +215,45 @@ exit
 In ottica di estensibilità il linguaggio consente anche l'esecuzione di binari e script custom, per il monitoraggio di funzionalità non previste dalle funzioni builtin del linguaggio.
 
 % tech stack di sviluppo
-Dal punto di vista di sviluppo sanet e formato da un insieme di moduli python che fanno uso estensivo del framework django per la gestione della webui e della persistenza a database,
-c
+Dal punto di vista di sviluppo sanet è formato da un insieme di moduli python che fanno uso estensivo del framework django per la gestione della web-ui e della persistenza a database,
+
 % agenti remoti
-Per monitorare i nodi di una data rete e necessario che i processi di sanet possano raggiungere gli apparati interessati, questo in produzione none sempre possibile per una serie di motivi quali partizionamento della rete per suddivisione dei compiti, regole firewall che non consentono il traffico dalla macchina di monitoraggio, inoltre in alcune installazioni geograficamente estese il monitoraggio risulta inefficiente in quanto le distanze rendono le misure di RTT esagerate e i timeout troppo stringenti, per affrontare il problema sanet offre la possibilità di utilizzare un poller remoto
+Per monitorare i nodi di una data rete è necessario che i processi di sanet possano raggiungere gli apparati interessati, questo in produzione non è sempre possibile per una serie di motivi quali partizionamento della rete per suddivisione dei compiti e regole firewall che non consentono il traffico dalla macchina di monitoraggio, inoltre in alcune installazioni geograficamente estese il monitoraggio risulta inefficiente in quanto le distanze rendono le misure di RTT esagerate e i timeout troppo stringenti, per affrontare il problema sanet offre la possibilità di utilizzare un poller remoto
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.3\linewidth]{build/remote_poller_architecture.png}
-    \caption{architettura del poller remoto}
+    \caption{Architettura del poller remoto}
     \label{fig:enter-label} \end{figure}
 
-Il poller remoto e pensato come un servizio stateless che comunica con il demone sanetd per mezzo della istanza di redis del demone sanetd, ottiene la lista di condition da eseguire e restituisce al demone principale i risultati, notare che la comunicazione e iniziata dal poller remoto
+Il poller remoto è pensato come un servizio stateless che comunica con il demone sanetd per mezzo della istanza di redis del demone sanetd, ottiene la lista di condition da eseguire e restituisce al demone principale i risultati, notare che la comunicazione è iniziata dal poller remoto
 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{build/remote_poller_sanetd_interaction.png}
-    \caption{interazione sanetd poller remoto}
+    \caption{Interazione sanetd poller remoto}
     \label{fig:enter-label}
 \end{figure}
 
-Sanet modella le entità che eseguono le condition come \verb|agenti|, ogni agente e affidato a un poller e ogni poller corrisponde a un set di processi pesanti unix e un sottoinsieme di thread python dedicati al particolare agente:
+Sanet modella le entità che eseguono le condition come \verb|agenti|, ogni agente è affidato a un poller e ogni poller corrisponde a un set di processi pesanti unix e a un sottoinsieme di thread python dedicati al particolare agente:
 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{build/agents_vs_pollers.png}
-    \caption{relazione tra poller e agenti}
+    \caption{Relazione tra poller e agenti}
     \label{fig:enter-label}
 \end{figure}
 
 % sum up
-Sanet si mostra come un complesso sistema distribuito in grado di adattarsi al contesto di produzione e fornire agli amministratori della rete un buon potere espressivo nel definire le operazioni richieste per il monitoraggio
+Sanet si mostra come un complesso sistema distribuito in grado di adattarsi al contesto di produzione e fornire agli amministratori della rete un buon potere espressivo nel definire le operazioni richieste per il monitoraggio.
 
 \newpage
 \subsection{Analisi del contesto aziendale}
 
 % struttura area NMS
-L'area network management and security (NMS) dei Laboratori e strutturata in Team, ogni team fa capo a un sistemista senior e risponde di un sottoinsieme di clienti. Per ogni cliente dei Laboratori viene predisposta un istanza del sistema Sanet in una macchina dedicata presso l'infrastruttura IT del cliente, l'amministrazione e affidata ai sistemisti che ne hanno in carico la commessa.
+L'area network management and security (NMS) dei Laboratori è strutturata in Team, ogni team fa capo a un sistemista senior e risponde di un sottoinsieme di clienti. Per ogni cliente dei Laboratori viene predisposta un istanza del sistema Sanet in una macchina dedicata presso l'infrastruttura IT del cliente, l'amministrazione è affidata ai sistemisti che ne hanno in carico la commessa.
 
 % gestione richieste di monitoraggio
 Le richieste di messa a monitoraggio dei clienti vengono svolte dai membri del team o dai membri del Network Operation Center (NOC) a seconda della complessità dell'operazione.
@@ -261,41 +261,40 @@ Le richieste di messa a monitoraggio dei clienti vengono svolte dai membri del t
 \begin{figure}[H]
     \centering
     \includegraphics[height=0.6\linewidth]{build/team_schema.png}
-    \caption{schema operatività team sistemistici}
+    \caption{Schema operatività team sistemistici}
     \label{fig:enter-label}
 \end{figure}
 
 Le richieste di monitoraggio possono spaziare tra una vasta gamma di casistiche tra cui:
 
 \begin{itemize}
-  \item{aggiunta a monitoraggio di elementi nuovi elementi noti}
-  \item{monitoraggio di applicativi di varia natura (database,servizi web, posta)}
-  \item{monitoraggio di infrastrutture hardware non note}
-  \item{monitoraggio di nodi mobili}
+  \item{Aggiunta a monitoraggio di elementi nuovi elementi noti}
+  \item{Monitoraggio di applicativi di varia natura (database,servizi web, posta)}
+  \item{Monitoraggio di infrastrutture hardware non note}
+  \item{Monitoraggio di nodi mobili}
 \end{itemize}
 
 In caso la richiesta preveda dello sviluppo software essa viene presa in carico dai membri del team che valutano e progettano un componente software che, interfacciandosi con sanet fornisce il servizio richiesto.
 
 % workflow di update
-I membri del team essi sono anche responsabili per la manutenzione e aggiornamento delle istanze di cui sono amministratori, il workflow di update prevede che l'area NAD notifichi il team della necessita di un aggiornamento delle istanze in produzione
-
+I membri del team sono anche responsabili per la manutenzione e aggiornamento delle istanze di cui sono amministratori, il workflow di update prevede che l'area NAD notifichi il team della necessità di un aggiornamento delle istanze in produzione.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/update_workflow.png}
-    \caption{workflow di update}
+    \caption{Workflow di update}
     \label{fig:enter-label}
 \end{figure}
 
-Il team inoltre determina come l'architettura di sanet venga distribuita sull'infrastruttura del cliente, considerando le risorse che il cliente mette a disposizione per la sua infrastruttura.
+Il team inoltre determina come l'architettura di sanet venga distribuita sull'infrastruttura del cliente, considerando le risorse che il cliente mette a disposizione per il monitoraggio.
 
 % workflow team NOC
 
 Il team NOC gestisce due workflow aziendali:
 
 \begin{itemize}
-  \item{incident response, intercettazione delle problematiche dell'infrastruttura del cliente e esecuzione di procedure di presa in carico e analisi del problema}
-  \item{service request, soddisfacimento di una specifica richiesta da parte del cliente}
+  \item{Incident response: intercettazione delle problematiche dell'infrastruttura del cliente e esecuzione di procedure di presa in carico e analisi del problema}
+  \item{Service request: soddisfacimento di una specifica richiesta da parte del cliente}
 \end{itemize}
 
 Per entrambi questi workflow il team NOC fa affidamento a una base documentale manutenuta dai team sistemistici dove vengono scritte le procedure i referenti e le principali problematiche di un tale componente infrastrutturale del cliente
@@ -304,34 +303,34 @@ Per entrambi questi workflow il team NOC fa affidamento a una base documentale m
 \subsection{Analisi stato della produzione}
 
 % "artefatti" prodotti dal area NAD (stendiamo un velo pietoso....)
-L'area NAD fornisce sanet sotto forma di repository subversion contenenti i sorgenti con una guida all'installazione e aggiornamento del software, l'applicativo e pensato per essere eseguito all'interno di un virtual environment di python dove vengono installati i moduli necessari, il sistema a runtime deve anche rendere disponibili i servizi attivi necessari al funzionamento come redis e postgres. Questi requisiti vengono soddisfatti dalla infrastruttura a runtime fornita dal team,
+L'area NAD fornisce sanet sotto forma di repository subversion contenenti i sorgenti con una guida all'installazione e aggiornamento del software, l'applicativo è pensato per essere eseguito all'interno di un virtual environment di python dove vengono installati i moduli necessari, il sistema a runtime deve anche rendere disponibili i servizi attivi necessari al funzionamento come redis e postgres. Questi requisiti vengono soddisfatti dalla infrastruttura a runtime fornita dal team,
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/sanet_production_simple.png}
-    \caption{architettura sanet in produzione}
+    \caption{Architettura sanet in produzione}
     \label{fig:enter-label}
 \end{figure}
 
 % sanet e bind locale
-Il sistema sanet, data la necessita di effettuare richieste di rete in maniera periodica genera un flusso costante di richieste DNS, questo porta a una degradazione delle prestazioni della rete e a statistiche di monitoraggio viziate come valori di RTT più alti e traffico in uscita dagli apparati di rete aumentato. Per migliorare la situazione e rendere il sistema più fault tolerant si introduce un server DNS locale al processo poller, questo si comporta da slave del DNS master del cliente, scarica le zone all'avvio e effettua la risoluzione dei nomi localmente al sistema sanet azzerando il traffico di rete.
+Il sistema sanet, data la necessità di effettuare richieste di rete in maniera periodica genera un flusso costante di richieste DNS, questo porta a una degradazione delle prestazioni della rete e a statistiche di monitoraggio viziate come valori di RTT più alti e traffico in uscita dagli apparati di rete aumentato. Per migliorare la situazione e rendere il sistema più fault tolerant si introduce un server DNS locale al processo poller, questo si comporta da slave del DNS master del cliente, scarica le zone all'avvio e effettua la risoluzione dei nomi localmente al sistema sanet azzerando il traffico di rete.
 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/sanet_bind.png}
-    \caption{sanet e bind locale}
+    \caption{Sanet e bind locale}
     \label{fig:enter-label}
 \end{figure}
 
-In questo modo sanet e in grado di continuare a erogare il servizio anche in caso di guasti al servizio DNS.
+In questo modo sanet è in grado di continuare a erogare il servizio anche in caso di guasti al servizio DNS.
 
 % sanet e le estensioni per il monitoraggio
 Le integrazioni per monitoraggi si presentano sotto molte forme, quelle maggiormente riscontrate in produzione sono:
 
 \begin{itemize}
-  \item{script bash o python eseguiti direttamente dal poller}
-  \item{script bash o python eseguiti periodicamente per mezzo del demone cron}
+  \item{Script bash o python eseguiti direttamente dal poller}
+  \item{Script bash o python eseguiti periodicamente per mezzo del demone cron}
 \end{itemize}
 
 In caso di esecuzione per mezzo di cron l'integrazione e sanet interagiscono in maniera disaccoppiata nel tempo e nello spazio, lo script comunica con sanet per mezzo del filesystem, scrivendo file all'interno della macchina di monitoraggio o per mezzo del demone redis, aggiungendo chiavi al database
@@ -339,18 +338,18 @@ In caso di esecuzione per mezzo di cron l'integrazione e sanet interagiscono in 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/sanet_integrations.png}
-    \caption{sanet e integrazioni sistemistiche}
+    \caption{Sanet e integrazioni sistemistiche}
     \label{fig:enter-label}
 \end{figure}
 
 Le competenze delle integrazioni possono variare da controlli infrastrutturali che monitorano lo stato di particolari servizi come tunnel vpn, backup job di virtualizzatori, stato di tablespaces oracle oppure monitorare particolari API di sistemi complessi come VMware.
 
 % sanet e rancid
-Una delle principali funzionalità che offre sanet e quella di monitorare apparati di rete che espongono agenti SNMP, uno dei compiti assegnati alla macchina di monitoraggio dai sistemisti e anche quello di eseguire il backup periodico degli apparati per mezzo del tool \verb|really awesome cisco config differ| (\verb|rancid|).
+Una delle principali funzionalità che offre sanet è quella di monitorare apparati di rete che espongono agenti SNMP, uno dei compiti assegnati alla macchina di monitoraggio dai sistemisti è anche quello di eseguire il backup periodico degli apparati per mezzo del tool \verb|really awesome cisco config differ| (\verb|rancid|).
 
 Il programma rancid sfrutta il programma \verb|clogin| per connettersi agli apparati, esegue dunque uno script \verb|perl| per recuperare le informazioni di configurazione dell'apparato in forma testuale e ne salva le modifiche per mezzo di un sistema di controllo di versione.
 
-Per evitare di configurare rancid manualmente i sistemisti hanno sviluppato un integrazione con sanet che data una struttura dati che fa uso dei tag di sanet per recuperare dinamicamente la lista di nodi che devono essere sottoposti alla procedura di backup di rancid
+Per evitare di configurare rancid manualmente i sistemisti hanno sviluppato un integrazione con sanet che data una struttura dati che fa uso dei tag di sanet recupera dinamicamente la lista di nodi che devono essere sottoposti alla procedura di backup di rancid
 
 \begin{figure}[H]
     \centering
@@ -370,7 +369,7 @@ Per garantire il servizio anche in caso di guasti fisici all'infrastruttura che 
 \end{figure}
 
 \newpage
-\subsection{analisi delle problematiche insorte}
+\subsection{Analisi delle problematiche insorte}
 
 % frammentazione dell'installato
 Delegare l'ingegnerizzazione delle istanze ai singoli team ha si ridotto il carico di lavoro dell'area NAD ma ha anche comportato con il tempo una situazione di frammentazione delle installazioni di sanet, le feature necessarie al monitoraggio sono implementate in maniera diversa a seconda della conoscenza a disposizione dei team di sanet e delle tecnologie utilizzabili.
@@ -379,15 +378,15 @@ Delegare l'ingegnerizzazione delle istanze ai singoli team ha si ridotto il cari
 Le integrazioni sviluppate da sistemisti per aggiungere funzionalità a sanet sono riconducibili tutte alla seguente struttura:
 
 \begin{itemize}
-  \item{raccolta dati da una fonte \(X\)}
-  \item{parsing dei dati raccolti da un formato \(\alpha\) a un formato \(\beta\)}
-  \item{comunicazione con il sistema sanet}
+  \item{Raccolta dati da una fonte \(X\)}
+  \item{Parsing dei dati raccolti da un formato \(\alpha\) a un formato \(\beta\)}
+  \item{Comunicazione con il sistema sanet}
 \end{itemize}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/sanet_integration_structure.png}
-    \caption{struttura delle integrazioni}
+    \caption{Struttura delle integrazioni}
     \label{fig:enter-label}
 \end{figure}
 
@@ -395,9 +394,9 @@ Le prime due fasi sono le più problematiche, la prima comporta spesso la comuni
 
 Quanto detto viene esacerbato ancora di più nella seconda fase, il parsing delle informazioni raccolte e infatti strettamente dipendente dal formato dei dati recuperati che è da considerarsi instabile e soggetto a mutazioni frequenti.
 
-Per Semplificare l'implementazione i sistemisti fanno spesso uso di librerie e o programmi esterni che si occupino di risolvere la complessità della comunicazione e o del parsing, in caso di script python questi possono anche condividere il virtual environment di sanet, rendendo impossibile la manutenzione delle dipendenze del software.
+Per Semplificare l'implementazione i sistemisti fanno spesso uso di librerie e o programmi esterni che si occupano di risolvere la complessità della comunicazione e o del parsing, in caso di script python questi possono anche condividere il virtual environment di sanet, rendendo impossibile la manutenzione delle dipendenze del software.
 
-La fase di comunicazione con sanet risulta comunque problematica in quanto non viene definita nessuna API "ufficiale" di comunicazione con l'applicazione stessa, di conseguenza le integrazioni comunicano con sanet per mezzo di sistemi complessi e non noti come puo essere l'esecuzione di script della command line interface di sanet, modifica di file nel filesystem, manipolazione delle chiavi in redis e cosi via.
+La fase di comunicazione con sanet risulta comunque problematica in quanto non viene definita nessuna API "ufficiale" di comunicazione con l'applicazione stessa, di conseguenza le integrazioni comunicano con sanet per mezzo di sistemi complessi e non noti come può essere l'esecuzione di script della command line interface di sanet, modifica di file nel filesystem, manipolazione delle chiavi in redis e cosi via.
 
 Le integrazioni inoltre non sono sottoposte a procedure di versioning o code review e non è prevista nessuna procedura di deployment al di fuori degli ambienti dove vengono sviluppati, di fatto si perde la conoscenza dello stato dell'installato, rendendo estremamente difficile qualunque operazione di manutenzione necessaria all'area NAD per aggiornare il software.
 
@@ -407,10 +406,10 @@ I team sistemistici fanno uso intensivo dei template per accelerare l'aggiunta a
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/sanet_config_comparison.png}
-    \caption{due diverse configurazioni ma con lo stesso obbiettivo}
+    \caption{Due diverse configurazioni ma con lo stesso obbiettivo}
     \label{fig:enter-label}
 \end{figure}
 
-Le due possibilità di configurazione danno luogo a scenari diversi, nel caso di utilizzo dell'ereditarietà si ha si una alta capacita espressiva in fase di progettazione del monitoraggio ma una minore malleabilità nel caso di scenari non previsti, per esempio in caso di un nodo che abbia multipli server web oppure che offra funzionalità ulteriori come il servizio radius, se invece si opta per la composizione si guadagna in malleabilità ma si delega la scelta dei template di cui comporre il nodo sempre in fase di messa a monitoraggio incrementando cosi il carico di lavoro.
+Le due possibilità di configurazione danno luogo a scenari diversi, nel caso di utilizzo dell'ereditarietà si ha si un'alta capacita espressiva in fase di progettazione del monitoraggio ma una minore malleabilità nel caso di scenari non previsti, per esempio in caso di un nodo che abbia multipli server web oppure che offra funzionalità ulteriori come il servizio radius, se invece si opta per la composizione si guadagna in malleabilità ma si delega la scelta dei template di cui comporre il nodo sempre in fase di messa a monitoraggio incrementando cosi il carico di lavoro.
 
 Il sintomo di queste problematiche lo si ha nello stato dell'installato che verte in una condizione di estrema software erosion e frammentazione, rendendo impossibile il transito della gestione al team NOC che non è a conoscenza delle scelte progettuali effettuate e delle motivazioni che hanno portato a compiere tali scelte.

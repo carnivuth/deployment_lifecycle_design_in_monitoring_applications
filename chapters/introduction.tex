@@ -1,6 +1,6 @@
 \chapter{Introduzione, background teorico e tecnologico}
 
-La manutenzione e il monitoraggio di un software in produzione e fondamentale per prevenire fenomeni di software erosion, gestire il software life-cycle nelle grandi installazioni e' sempre molto costoso, specialmente se il core business non e lo sviluppo software ma il servizio erogato tramite esso.
+La manutenzione e il monitoraggio di un software in produzione è fondamentale per prevenire fenomeni di software erosion, gestire il software life-cycle nelle grandi installazioni è sempre molto costoso, specialmente se il core business non è lo sviluppo software ma il servizio erogato tramite esso.
 
 Il problema si presenta in maniera ancora maggiore quando la separazione dei contesti dovuta all'espansione del parco clienti porta a un crescere sempre maggiore del numero di istanze del software in produzione che erogano il servizio, gli effetti più comuni della software erosion sono:
 
@@ -14,12 +14,12 @@ Queste problematiche possono diventare causa di forti rallentamenti al workflow 
 
 Un esempio può essere l'installazione manuale di dipendenze applicative, rese obsolete da aggiornamenti dell'ambiente di esecuzione ma necessarie all'applicazione per funzionare risultando in ambienti non solo instabili ma anche insicuri.
 
-La software erosion incide anche sullo sviluppo del software in produzione, dato che l'aggiornamento di istanze "dimenticate" può richiedere troppe risorse invogliando cosi all'implementazione di workaround pur di soddisfare esigenze di servizio. In queste situazioni l'istanza in produzione e soggetta a una "morsa a tenaglia" dove il ciclo di rilascio del software si deve scontrare con integrazioni applicative sviluppate dagli utenti sistemisti che sfruttano API "non convenzionali" per arricchire le funzionalità del sistema stesso.
+La software erosion incide anche sullo sviluppo del software in produzione, dato che l'aggiornamento di istanze "dimenticate" può richiedere troppe risorse invogliando cosi all'implementazione di workaround pur di soddisfare esigenze di servizio. In queste situazioni l'istanza in produzione è soggetta a una "morsa a tenaglia" dove il ciclo di rilascio del software si deve scontrare con integrazioni applicative sviluppate dagli utenti sistemisti che sfruttano API "non convenzionali" per arricchire le funzionalità del sistema stesso.
 
-Il problema risulta accentuato se lo sviluppo non prevede la produzione e l'utilizzo di artefatti per la messa in produzione del software, in questo caso le infrastrutture in produzione sono alla merce di procedure di installazione manuali che portano a una frammentazione degli ambienti in produzione. La creazione di artefatti, specialmente per sistemi software complessi, non deve prevedere solo la messa in funzione delle componenti applicative sviluppate a doc ma anche di tutti i possibili servizi di cui l'applicazione necessita come:
+Il problema risulta accentuato se lo sviluppo non prevede la creazione e l'utilizzo di artefatti per la messa in produzione del software, in questo caso le infrastrutture in produzione sono alla merce di procedure d'installazione manuali che portano a una frammentazione degli ambienti in produzione. La creazione di artefatti, specialmente per sistemi software complessi, non deve prevedere solo la messa in funzione delle componenti applicative sviluppate a doc ma anche di tutti i possibili servizi di cui l'applicazione necessita come:
 
 \begin{itemize}
-    \item servizi di data storage (databases,demoni cache)
+    \item servizi di data storage (databases, demoni, cache)
     \item servizi web
     \item demoni per l'esecuzione di manutenzioni programmate
 \end{itemize}

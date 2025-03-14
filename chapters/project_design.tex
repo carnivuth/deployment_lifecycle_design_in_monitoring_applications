@@ -1,18 +1,18 @@
 \chapter{Progettazione della soluzione}
 %Progettazione della architettura di produzione del software applicativo, gestione di tutti i componenti critici per la corretta erogazione dei servizi offerti e progettazione del sistema di software management per la gestione del life-cycle, progettazione di tutte le operazioni necessarie per la migrazione alla nuova architettura
 
-Dato il contesto descritto sopra uno degli obbiettivi risultava essere l'allineamento dell'infrastruttura di sanet a una sola architettura comune, che semplificasse l'installazione, e l'aggiunta di componenti al sistema senza sottrarre ai sistemisti la capacità di intervenire sull'installato, i requisiti di questa infrastruttura sono stati:
+Dato il contesto descritto sopra uno degli obbiettivi risultava essere l'allineamento dell'infrastruttura di sanet a una sola architettura comune, che semplificasse l'installazione, e l'aggiunta di componenti al sistema senza sottrarre ai sistemisti la capacità d'intervenire sull'installato, i requisiti di questa infrastruttura sono stati:
 
 \begin{itemize}
-\item{riproducibilità della stessa}
-\item{gestione delle versioni dell'infrastruttura}
-\item{possibilità di gestione e monitoraggio centralizzati}
+\item{Riproducibilità della stessa}
+\item{Gestione delle versioni dell'infrastruttura}
+\item{Possibilità di gestione e monitoraggio centralizzati}
 \end{itemize}
 
 % Il problema del deployment
-Il problema principale riscontrato in fase di analisi e quello legato alla gestione del deployment da parte dei due team coinvolti NAD e NMS, nel workflow mostrato la progettazione del deployment e delegata ai team sistemistici, impedendo all'area NAD di conoscere lo stato delle istanze in produzione, inoltre l'assenza di artefatti prodotti fa si che fra la progettazione del deployment e le effettive operazioni di messa in produzione non esista un interfaccia chiara che costringa le due parti a un workflow condiviso.
+Il problema principale riscontrato in fase di analisi è quello legato alla gestione del deployment da parte dei due team coinvolti NAD e NMS, nel workflow mostrato la progettazione del deployment è delegata a i vari team sistemistici, impedendo all'area NAD di conoscere lo stato delle istanze in produzione, inoltre l'assenza di artefatti prodotti fa si che fra la progettazione del deployment e le effettive operazioni di messa in produzione non esista un interfaccia chiara che costringa le due parti a un workflow condiviso.
 
-Risultava quindi necessario progettare un artefatto che fosse installabile, ma che allo stesso tempo lasciasse ai team sistemistici la possibilità di modificare l'ambiente di esecuzione in caso di necessità per rispondere tempestivamente alle richieste dei clienti.
+Risultava quindi necessario progettare un artefatto che fosse installabile, ma che allo stesso tempo lasciasse a i team sistemistici la possibilità di modificare l'ambiente di esecuzione in caso di necessità per rispondere tempestivamente alle richieste dei clienti.
 
 \newpage
 \subsection{Progettazione dell'artefatto: Il container}
@@ -22,7 +22,7 @@ La necessità di pacchettizzare sia le dipendenze applicative che demoni come re
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/container.png}
-    \caption{container come artefatto}
+    \caption{Container come artefatto}
     \label{fig:container}
 \end{figure}
 
@@ -30,7 +30,7 @@ La necessità di pacchettizzare sia le dipendenze applicative che demoni come re
 Per la creazione del container il team ha optato per la tecnologia LXC\cite{lxc} che offre un set di API di basso livello per la creazione di ambienti runtime isolati sfruttando le possibilità offerte dalla funzionalità namespaces del kernel linux. La tecnologia LXC non fa assunzioni sulla natura del container e consente la creazione di ambienti virtuali completi di init system dove all'interno possono risiedere processi demoni di varia natura.
 
 % struttura del container LXC
-Nel container LXC vengono predisposti tutti i moduli di sanet e viene creato il virtual environment di python necessario per l'esecuzione, vengono inoltre installati tutti i demoni necessari al funzionamento di sanet, e inoltre presente il software rancid per il backup periodico delle configurazioni degli apparati e la sua integrazione con sanet
+Nel container LXC vengono predisposti tutti i moduli di sanet e viene creato il virtual environment di python necessario per l'esecuzione, vengono inoltre installati tutti i demoni necessari al funzionamento di sanet, è inoltre presente il software rancid per il backup periodico delle configurazioni degli apparati e la sua integrazione con sanet
 
 % gestione dei dati
 Sanet e rancid producono una mole di dati proporzionale al numero di datagroup monitorati di cui viene mantenuto uno storico di un anno, in un installazione medio piccola questo comporta \(\simeq 1000 GB\) di occupazione di storage, questi dati inoltre devono essere sottoposti a backup e sopravvivere a una distruzione del container, per garantirlo viene sfruttata la tecnologia bind mount offerta da LXC\cite{lxc}
@@ -38,7 +38,7 @@ Sanet e rancid producono una mole di dati proporzionale al numero di datagroup m
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/container_data_management.png}
-    \caption{gestione dei dati e bind mounts}
+    \caption{Gestione dei dati e bind mounts}
     \label{fig:container_data_management}
 \end{figure}
 
@@ -48,41 +48,41 @@ Il container di sanet fa parte di una rete privata con indirizzamento \verb|169.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{build/container_network.png}
-    \caption{networking nel container}
+    \caption{Networking nel container}
     \label{fig:container_network}
 \end{figure}
 
 % gestione delle integrazioni
-Una grande sfida per il progetto e stato determinare una politica con cui gestire le integrazioni, non era possibile ignorarle in fase di progettazione in quanto avrebbe comportato un grave disservizio per il cliente e la re-ingegnerizzazione di ognuna di queste avrebbe comportato un aumento non accettabile dei tempi di sviluppo del progetto, il team ha dunque optato per una riorganizzazione delle integrazioni sistemistiche più frequenti in una raccolta pre-installata nel container, questa include:
+Una grande sfida per il progetto è stato determinare una politica con cui gestire le integrazioni, non era possibile ignorarle in fase di progettazione in quanto avrebbe comportato un grave disservizio per il cliente e la re-ingegnerizzazione di ognuna di queste avrebbe comportato un aumento non accettabile dei tempi di sviluppo del progetto, il team ha dunque optato per una riorganizzazione delle integrazioni sistemistiche più frequenti in una raccolta pre-installata nel container, questa include:
 
 \begin{itemize}
-  \item{discovery automatica dei nodi da aggiungere a monitoraggio}
-  \item{backup dei dati applicativi}
-  \item{sistema di email spia per verificare il corretto funzionamento della posta}
-  \item{tools per il sincronismo di installazioni master-slave}
-  \item{monitoraggio di infrastrutture \verb|checkmk|}
-  \item{monitoraggio di infrastrutture \verb|VMware|}
-  \item{monitoraggio del servizio \verb|radius| }
-  \item{monitoraggio del servizio \verb|ldap| }
-  \item{monitoraggio del servizio \verb|samba| }
+  \item{Discovery automatica dei nodi da aggiungere a monitoraggio}
+  \item{Backup dei dati applicativi}
+  \item{Sistema di email spia per verificare il corretto funzionamento della posta}
+  \item{Tools per il sincronismo d'installazioni master-slave}
+  \item{Monitoraggio d'infrastrutture \verb|checkmk|}
+  \item{Monitoraggio d'infrastrutture \verb|VMware|}
+  \item{Monitoraggio del servizio \verb|radius| }
+  \item{Monitoraggio del servizio \verb|ldap| }
+  \item{Monitoraggio del servizio \verb|samba| }
 \end{itemize}
 
-Non tutte le integrazioni sono presenti all'interno del container di default di conseguenza il container e predisposto per preservare le integrazioni esistenti che vengono importate nel container per mezzo di un bind mount
+Non tutte le integrazioni sono presenti all'interno del container di default di conseguenza il container è predisposto per preservare le integrazioni esistenti che vengono importate nel container per mezzo di un bind mount
 
 % gestione delle configurazioni
-Le installazioni in produzione prevedono un set di configurazioni custom degli applicativi a bordo come per esempio la configurazione di sanet stesso, del demone di posta, di rancid oppure di postgres, l'architettura a container doveva tener conto di queste configurazioni e riportarle a seguito di una migrazione, per soddisfare il requisito si è deciso di esportare le configurazioni per mezzo di repository \verb|git|
+Le installazioni in produzione prevedono un set di configurazioni custom degli applicativi a bordo come per esempio la configurazione di sanet stesso, del demone di posta, di rancid oppure di postgres, l'architettura a container doveva tener conto di queste configurazioni e replicarle dopo la migrazione, per soddisfare il requisito si è deciso di esportare le configurazioni per mezzo di repository \verb|git|
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/customer_repository.png}
-    \caption{gestione delle configurazioni per mezzo di git}
+    \caption{Gestione delle configurazioni per mezzo di git}
     \label{fig:customer_repository}
 \end{figure}
 
 Viene predisposta una repository per cliente per garantire la divisione di ambito e all' interno viene replicata la struttura \verb|FHS| con all'interno le configurazioni necessarie ai servizi presenti nel container per funzionare correttamente, Per le prime installazioni e inoltre prevista una repository di configurazioni di default che consenta ai servizi di partire da cui viene creata la versione specifica per il cliente in questione
 
 % perché il container bulky
-Per evitare di modificare quanto sviluppato dall'area NAD il container in questione e pensato come architettura all-in-one che pacchettizza tutti i demoni necessari al sistema, in questo modo lo sviluppo di sanet può essere organizzato in maniera indipendente a quello degli artefatti
+Per evitare di modificare quanto sviluppato dall'area NAD il container in questione è pensato come architettura all-in-one che pacchettizza tutti i demoni necessari al sistema, in questo modo lo sviluppo di sanet può essere organizzato in maniera indipendente a quello degli artefatti
 
 % perché non docker
 Sono state valutate anche soluzioni che prevedessero l'uso della tecnologia docker\cite{docker}, queste tuttavia limitavano molto il workflow dei team sistemistici che non avrebbero potuto modificare agilmente il container in caso di necessità.
@@ -95,70 +95,70 @@ Progettare l'artefatto non è sufficiente, è necessario prevedere le procedure 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/provisioner_architecture.png}
-    \caption{architettura del provisioner}
+    \caption{Architettura del provisioner}
     \label{fig:provisioner_architecture}
 \end{figure}
 
-Il provisioner e si occupa dei seguenti compiti:
+Il provisioner si occupa dei seguenti compiti:
 
 \begin{itemize}
-  \item{creare l'artefatto installabile}
-  \item{installare istanza di sanet su infrastruttura on premise }
-  \item{aggiornare le istanze di sanet}
-  \item{aggiungere al monitoraggio centralizzato un istanza di sanet}
-  \item{effettuare operazioni massive come riconfigurazione di componenti dell'infrastruttura applicativa}
+  \item{Creare l'artefatto installabile}
+  \item{Installare un'istanza di sanet su infrastruttura on premise}
+  \item{Aggiornare le istanze di sanet}
+  \item{Aggiungere al monitoraggio centralizzato un istanza di sanet}
+  \item{Effettuare operazioni massive come riconfigurazione di componenti dell'infrastruttura applicativa}
 \end{itemize}
 
 Il team ha deciso di optare per ansible\cite{ansible} come tecnologia di riferimento per effettuare il provisioning, le procedure vengono implementate come ansible playbooks e il nodo provisioner diviene la ansible tower
 
 % comunicazione e accesso alle macchine
-Per implementare le procedure pensate per il progetto una prima necessità è stata quella di definire le modalità di accesso alle infrastrutture target per il provision. Per non complicare l'infrastruttura aziendale si e optato per usufruire delle stesse dinamiche di comunicazione adottate dai team sistemistici per accedere alle macchine ovvero sfruttando un tunnel vpn tra la rete labs e le macchine di monitoraggio installate on premise presso i clienti.
+Per implementare le procedure pensate per il progetto una prima necessità è stata quella di definire le modalità di accesso alle infrastrutture target per il provision. Per non complicare l'infrastruttura aziendale si è optato per usufruire delle stesse dinamiche di comunicazione adottate dai team sistemistici per accedere alle macchine ovvero sfruttando un tunnel vpn tra la rete labs e le macchine di monitoraggio installate on premise presso i clienti.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/ansible_access.png}
-    \caption{struttura di comunicazione del provisioner}
+    \caption{Struttura di comunicazione del provisioner}
     \label{fig:ansible_access}
 \end{figure}
 
-La comunicazione avviene per mezzo del protocollo \verb|SSH|, il provisioner si autentica per mezzo di chiave \verb|RSA|, l'accesso ai container LXC avviene per mezzo della funzionalità proxy-jump del demone SSH, la stessa funzionalità viene sfruttata per raggiungere istanze di poller remoti.
+La comunicazione avviene per mezzo del protocollo \verb|SSH|, il provisioner si autentica per mezzo di chiave \verb|RSA|, l'accesso nei container LXC avviene per mezzo della funzionalità proxy-jump del demone SSH, la stessa funzionalità viene sfruttata per raggiungere istanze di poller remoti.
 
-L'accesso alla macchina di provision avviene presso connessione SSH da rete interna labs, questa e accessibile solo dalla macchina firewall esposta su internet il cui accesso e consentito previa autenticazione a due fattori, come backup e possibile accedere direttamente alla macchina provisioner per mezzo della stessa modalità di autenticazione
+L'accesso alla macchina di provision avviene presso connessione SSH da rete interna labs, questa è accessibile solo dalla macchina firewall esposta su internet il cui accesso e consentito previa autenticazione a due fattori, come backup è possibile accedere direttamente alla macchina provisioner per mezzo della stessa modalità di autenticazione
 
 % progettazione della procedura di build
-L'artefatto viene ricreato per mezzo di un playbook che effettua la build del container partendo da uno scheletro base minimale e installando le componenti di necessarie, la build viene controllata dal provisioner e effettuata su una macchina di staging, consentendo al team di effettuare test manuali con l'obbiettivo di collaudare il funzionamento delle sue componenti e integrazioni aggiuntive, nonché testare le nuove features introdotte da un aggiornamento
+L'artefatto viene ricreato per mezzo di un playbook che effettua la build del container partendo da uno scheletro base minimale e installando le componenti necessarie, la build viene controllata dal provisioner ed effettuata su una macchina di staging, consentendo al team di effettuare test manuali con l'obbiettivo di collaudare il funzionamento delle sue componenti e integrazioni aggiuntive, nonché testare le nuove features introdotte da un aggiornamento
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/build_procedure.png}
-    \caption{procedura di build}
+    \caption{Procedura di build}
     \label{fig:build_procedure}
 \end{figure}
 
-La procedura di build consente di ottenere in maniera programmatica un infrastruttura identica per ogni installazione, e rende possibile la progettazione di operazioni massive in quanto si possono fare assunzioni sull'ambiente runtime dove si va ad operare, questo risulta essere un requisito fondamentale per rendere la manutenzione delle installazioni scalabile
+La procedura di build consente di ottenere in maniera programmatica un infrastruttura identica per ogni installazione, e rende possibile la progettazione di operazioni massive in quanto si possono fare assunzioni sull'ambiente runtime dove si va a operare, questo risulta essere un requisito fondamentale per rendere la manutenzione delle installazioni scalabile
 
 % progettazione della procedura di installazione
-Gli artefatti prodotti dalla procedura di build devono poter essere installati in maniera programmatica, è stata dunque prevista una procedura di di installazione di una nuova istanza di sanet, l'installazione prevede 3 fasi principali:
+Gli artefatti prodotti dalla procedura di build devono poter essere installati in maniera programmatica, è stata dunque prevista una procedura di d'installazione di una nuova istanza di sanet, l'installazione prevede tre fasi principali:
 
 \begin{itemize}
-  \item{preparazione della macchina host e installazione delle componenti principali}
-  \item{ottenimento dell'artefatto}
-  \item{configurazione dell'artefatto con le configurazioni del cliente specifico}
+  \item{Preparazione della macchina host e installazione delle componenti principali}
+  \item{Ottenimento dell'artefatto}
+  \item{Configurazione dell'artefatto con le configurazioni del cliente specifico}
 \end{itemize}
 
-In questa fase viene effettuata inoltre l'inizializzazione del database postgres, necessaria in quanto in fase di installazione la directory dati di postgres viene montata all'esterno del container provocandone la cancellazione dei contenuti.
+In questa fase viene effettuata inoltre l'inizializzazione del database postgres, necessaria in quanto in fase d'installazione la directory dati di postgres viene montata all'esterno del container provocandone la cancellazione dei contenuti.
 
 % implementazione con ansible
-Il playbook che implementa la procedura di installazione e strutturato secondo il pattern strategy, il playbook specifica le macchine in cui eseguire la procedura e richiama un role ansible comportandosi da proxy, è il role stesso che implementa le logiche operative di installazione dello specifico contianer.
+Il playbook che implementa la procedura d'installazione è strutturato secondo il pattern strategy, il playbook specifica le macchine in cui eseguire la procedura e richiama un role ansible comportandosi da proxy, è il role stesso che implementa le logiche operative d'installazione dello specifico container.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/proxy_playbook.png}
-    \caption{struttura dei playbook con pattern strategy}
+    \caption{Struttura dei playbook con pattern strategy}
     \label{fig:proxy_playbook}
 \end{figure}
 
-In questo modo il playbook di installazione può essere utilizzato anche in fase di build per effettuare il deploy del container skel
+In questo modo il playbook d'installazione può essere utilizzato anche in fase di build per effettuare il deploy del container skel
 
 \begin{figure}[H]
     \centering
@@ -172,27 +172,27 @@ In questo modo il playbook di installazione può essere utilizzato anche in fase
 Come detto in precedenza lo stato dell'installato non poteva essere ignorato in questa fase, era fondamentale prevedere una procedura di migrazione che data una istanza in produzione in condizioni potenzialmente ignote, effettuasse il deployment della nuova architettura garantendo la continuità di servizio e il minimo downtime possibile, alcune delle problematiche da affrontare nella ingegnerizzazione di questa procedura sono:
 
 \begin{itemize}
-  \item{clashing di indirizzamenti IP con quelli del container}
-  \item{clashing di nomi all'interno del filesystem}
-  \item{stato dei dischi}
-  \item{configurazioni discordanti tra il container e quanto presente in produzione}
+  \item{Clashing d'indirizzamenti IP con quelli del container}
+  \item{Clashing di nomi all'interno del filesystem}
+  \item{Stato dei dischi}
+  \item{Configurazioni discordanti tra il container e quanto presente in produzione}
 \end{itemize}
 
 % operazioni pre migrazione
-In particolare in questa fase era necessario reperire le configurazioni custom della istanza in questione per poter riconfigurare l'artefatto successivamente, e stato dunque previsto un playbook che si occupasse di creare la repository git e esportare le configurazioni interessanti della istanza,vengono inoltre apportate delle correzioni alle configurazioni per quei software che a seguito di aggiornamenti hanno deprecato dei parametri di configurazione, in caso non sia presente una specifica configurazione viene fornito il default previsto dal team per quel particolare software.
+In particolare in questa fase era necessario reperire le configurazioni custom della istanza in questione per poter riconfigurare l'artefatto successivamente, è stato dunque previsto un playbook che si occupasse di creare la repository git ed esportare le configurazioni interessanti della istanza, vengono inoltre apportate delle correzioni alle configurazioni per quei software che successivamente ad aggiornamenti hanno deprecato dei parametri di configurazione, in caso non sia presente una specifica configurazione viene fornito il default previsto dal team per quel particolare software.
 
-Per accelerare la fase di migrate e ridurre il conseguente downtime viene effettuata una pulizia  dei log salvati nel database in modo da ridurre la quantità di dati da esportare durante la procedura.
+Per accelerare la fase di migrate e ridurre il conseguente downtime viene effettuata una pulizia dei log salvati nel database in modo da ridurre la quantità di dati da esportare durante la procedura.
 
 La procedura di migrate completa si compone delle seguenti fasi
 
 \begin{itemize}
-  \item{esportazione delle configurazioni per mezzo di git}
-  \item{pulizia dei log a database della istanza in produzione}
-  \item{creazione di una istanza di sanet temporanea a bordo della infrastruttura del cliente}
-  \item{arresto della vecchia istanza di sanet}
-  \item{dump del database}
-  \item{restore del database nella nuova infrastruttura a container}
-  \item{riconfigurazione della nuova istanza per mezzo della repository git}
+  \item{Esportazione delle configurazioni per mezzo di git}
+  \item{Pulizia dei log a database della istanza in produzione}
+  \item{Creazione di una istanza di sanet temporanea a bordo della infrastruttura del cliente}
+  \item{Arresto della vecchia istanza di sanet}
+  \item{Dump del database}
+  \item{Restore del database nella nuova infrastruttura a container}
+  \item{Riconfigurazione della nuova istanza per mezzo della repository git}
 \end{itemize}
 
 \begin{figure}[H]
@@ -209,7 +209,7 @@ Una volta migrate le istanze in produzione era necessario prevedere un workflow 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/alpha_client.png}
-    \caption{infrastruttura cliente alpha}
+    \caption{Infrastruttura cliente alpha}
     \label{fig:alpha_client}
 \end{figure}
 
@@ -218,20 +218,20 @@ In queste situazioni vi è la possibilità di testare l'update sfruttando l'inst
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{build/beta_client.png}
-    \caption{infrastruttura cliente beta}
+    \caption{Infrastruttura cliente beta}
     \label{fig:beta_client}
 \end{figure}
 
-In queste infrastrutture non e prevista un istanza di backup o l'istanza di backup non replica perfettamente l'istanza master qui lo schema di aggiornamento A/B non risulta ugualmente utile o nel peggiore dei casi non è attuabile, la terza tipologia di istanze e quella \(\gamma\)
+In queste infrastrutture non è prevista un istanza di backup o l'istanza di backup non replica perfettamente l'istanza master qui lo schema di aggiornamento A/B non risulta ugualmente utile o nel peggiore dei casi non è attuabile, la terza tipologia d'istanze è quella \(\gamma\)
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/gamma_client.png}
-    \caption{infrastruttura cliente gamma}
+    \caption{Infrastruttura cliente gamma}
     \label{fig:gamma_client}
 \end{figure}
 
-Queste sono le infrastrutture più complesse, presentano nodi che spesso sono distribuiti in locazioni geografiche remote, macchine fisiche che presentano elementi infrastrutturali sia della installazione master che slave e logiche di fail over implementate a livello del singolo elemento infrastrutturale.
+Queste sono le infrastrutture più complesse, presentano nodi che spesso sono distribuiti in locazioni geografiche remote, macchine fisiche che presentano elementi infrastrutturali sia della installazione master che slave e logiche di fail-over implementate a livello del singolo elemento infrastrutturale.
 
 Un'altra importante considerazione da fare riguarda le installazioni per cui è previsto servizio di reperibilità, il loro funzionamento risulta essere più critico delle altre.
 
@@ -251,17 +251,17 @@ Per affrontare il problema la procedura di update è stata suddivisa in 4 batch 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/update_batches.png}
-    \caption{procedura di aggiornamento di sanet in batches}
+    \caption{Procedura di aggiornamento di sanet in batches}
     \label{fig:update_batches}
 \end{figure}
 
 Problema non banale è stato quello di suddividere le istanze nei vari batches, per far ciò è stata definita una funzione di scoring \(S\) che valutasse la criticità di un installazione in base ai seguenti parametri:
 
 \begin{itemize}
-  \item{numero di nodi monitorati dall'istanza}
-  \item{numero di nodi appartenenti al cluster di monitoraggio}
-  \item{se l'istanza e slave}
-  \item{se per il dato cliente e previsto servizio di reperibilità}
+  \item{Numero di nodi monitorati dall'istanza}
+  \item{Numero di nodi appartenenti al cluster di monitoraggio}
+  \item{Se l'istanza è slave}
+  \item{Se per il dato cliente è previsto servizio di reperibilità}
 \end{itemize}
 
 \newpage
@@ -271,7 +271,7 @@ La funzione di scoring aveva inoltre come vincolo che data una installazione sla
   batch(slave_instance) < batch(master_instance)
 \end{equation}
 
-Questo per poter sfruttare le installazioni slave come staging delle corrispettive installazioni master
+Questo per poter sfruttare le installazioni slave come ambiente staging delle corrispettive installazioni master
 
 \begin{lstlisting}[language=python]
 def compute_critical(hosts,host):
@@ -282,7 +282,7 @@ def compute_critical(hosts,host):
     return repcoeff * rolecoeff * clustercoeff * num_nodes
 \end{lstlisting}
 
-Per poter ridurre il downtime in fase di update l'implementazione della procedura e stata pensata per essere personalizzabile in fase di esecuzione, in quanto differenti aggiornamenti possono comportare il riavvio di componenti diversi della infrastruttura, per esempio in caso di aggiornamento alla web-ui non e necessario riavviare il demone principale sanetd o aggiornare gli eventuali poller remoti
+Per poter ridurre il downtime in fase di update l'implementazione della procedura è stata pensata per essere personalizzabile in fase di esecuzione, in quanto differenti aggiornamenti possono comportare il riavvio di componenti diversi della infrastruttura, per esempio in caso di aggiornamento alla web-ui non è necessario riavviare il demone principale sanetd o aggiornare gli eventuali poller remoti
 
 % monitoraggio delle istanze centralizzato
 Le istanze di sanet aggiornate necessitano di monitoraggio per garantire il mantenimento dello stato dell'installato, per far ciò si è predisposto un istanza di sanet centrale che raccogliesse le informazioni di stato dell'installato, queste vengono raccolte per mezzo di un endpoint HTTP esposto dalle singole istanze di sanet
@@ -290,7 +290,7 @@ Le istanze di sanet aggiornate necessitano di monitoraggio per garantire il mant
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/sanet_monitor.png}
-    \caption{struttura di monitoraggio di sanet}
+    \caption{Struttura di monitoraggio di sanet}
     \label{fig:sanet_monitor}
 \end{figure}
 
@@ -299,7 +299,7 @@ La messa a monitoraggio di una nuova istanza di sanet viene realizzata per mezzo
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{build/add_monitor_procedure.png}
-    \caption{struttura di monitoraggio di sanet}
+    \caption{Struttura di monitoraggio di sanet}
     \label{fig:add_monitor_procedure}
 \end{figure}
 
@@ -311,11 +311,11 @@ Per soddisfare la necessità il team ha adottato per un approccio di build che p
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{build/inventory_generator.png}
-    \caption{processo di generazione dell'inventory}
+    \caption{Processo di generazione dell'inventory}
     \label{fig:inventory_generator}
 \end{figure}
 
-Il tutto viene implementato per mezzo della tecnologia di templating \verb|jinja| e \verb|make|
+Il tutto viene implementato per mezzo della tecnologia di templating \verb|jinja| e il tool \verb|make|
 
 \begin{lstlisting}[language=make]
 BUILDDIR=./build
