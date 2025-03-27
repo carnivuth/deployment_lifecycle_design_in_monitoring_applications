@@ -2,6 +2,10 @@
 
 Lavoro di tesi magistrale svolto presso i [Laboratori Guglielmo Marconi](https://www.labs.it/), dedicato alla progettazione e al management del software life-cycle del sistema di monitoraggio [Sanet](https://sanet.labs.it/homepage/)
 
+## Ringraziamenti
+
+Questo e stato l'ultimo traguardo alla fine di un viaggio incredibile pieno di alti bassi gioie e dolori che non si sarebbe concluso cosi se non fosse stato per tutta una serie di persone che mi hanno sostenuto, a loro vanno i miei piu sentiti [ringraziamenti](./acknowledgements.md)
+
 ## Visionare l'elaborato
 
 L'ultima versione dell'elaborato e disponibile nelle [releases](https://github.com/carnivuth/deployment_lifecycle_design_in_monitoring_applications/releases)
