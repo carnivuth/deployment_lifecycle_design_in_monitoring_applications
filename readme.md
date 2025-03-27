@@ -4,7 +4,7 @@ Lavoro di tesi magistrale svolto presso i [Laboratori Guglielmo Marconi](https:/
 
 ## Ringraziamenti
 
-Questo e stato l'ultimo traguardo alla fine di un viaggio incredibile pieno di alti bassi gioie e dolori che non si sarebbe concluso cosi se non fosse stato per tutta una serie di persone che mi hanno sostenuto, a loro vanno i miei piu sentiti [ringraziamenti](./acknowledgements.md)
+Questo è stato l'ultimo traguardo alla fine di un viaggio incredibile pieno di alti bassi gioie e dolori che non si sarebbe concluso così se non fosse stato per tutta una serie di persone che mi hanno sostenuto, a loro vanno i miei più sentiti [ringraziamenti](./acknowledgements.md)
 
 ## Visionare l'elaborato
 
