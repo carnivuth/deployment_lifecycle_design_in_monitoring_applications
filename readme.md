@@ -21,7 +21,7 @@ git clone https://github.com/carnivuth/deployment_lifecycle_design_in_monitoring
 - installare le dipendenze di build
 
 ```bash
-pacman -S texlive-latex texlive-latexrecommended texlive-binextra texlive-latexextra make mermaid-cli inotify-tools evince
+pacman -S texlive make mermaid-cli inotify-tools
 ```
 
 - buildare il progetto
