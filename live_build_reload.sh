@@ -1,5 +1,5 @@
 #!/bin/bash
-TARGET_FILES="main.tex graphs chapters"
+TARGET_FILES="."
 BUILDDIR="./build"
 
 function run_build(){
@@ -9,9 +9,9 @@ function run_build(){
 
   echo $1 $filename $extension
 
+  # limit build to modified files only
   case "$extension" in
     mmd)
-      # limit build to modified files only
       make "$BUILDDIR/$filename.png"
       make "main.pdf"
       ;;
@@ -28,6 +28,8 @@ inotifywait \
   --monitor  \
   --event move_self \
   --event create \
+  --recursive \
+  --exclude "$(find .  -name '.git' -type d -printf '%P|').*\.aux|.*\.bbl|.*\.bcf|.*\.bcf-SAVE-ERROR|.*\.blg|.*\.fdb_latexmk|.*\.fls|.*\.idx|.*\.ilg|.*\.ind|.*\.log|.*\.out|.*\.pdf|.*\.run" \
   --format "%w %e %f" $TARGET_FILES | while read file event newfile; do
 
   echo $file $event $newfile
